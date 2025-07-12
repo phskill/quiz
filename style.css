@@ -58,6 +58,10 @@ h1 {
   border-color: #27ae60;
   color: #000;
 }
+.answer strong {
+  margin-right: 6px;
+  color: #00ffcc;
+}
 
 .answer.incorrect {
   background-color: #e74c3c;
