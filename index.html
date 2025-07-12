@@ -3,61 +3,44 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-  <title>Quiz Dashboard</title>
+  <title>Dashboard</title>
   <link rel="stylesheet" href="style.css" />
 </head>
 <body>
 
-  <h1>🎓 Welcome to Your Quiz Portal</h1>
-  <h2 id="welcome-msg"></h2>
+  <h1>🏠 Welcome to the Quiz Portal</h1>
+  <h2 id="user-label"></h2>
 
   <div id="chapter-select-container">
-    <button id="logout-btn" type="button">🚪 Logout</button>
-    <button onclick="window.location.href='profile.html'" type="button">📊 My Profile</button>
-
-    <h3>📚 Choose a Chapter</h3>
     <select id="chapter-select">
-      <option value="">-- Select Chapter --</option>
+      <option value="">Select a Chapter</option>
+      <option value="Chapter 1">Chapter 1</option>
+      <option value="Chapter 2">Chapter 2</option>
+      <option value="Chapter 3">Chapter 3</option>
+      <!-- Add more chapters as needed -->
     </select>
-
-    <button id="start-btn" type="button" disabled>Start Quiz</button>
+    <div class="button-box">
+      <button id="start-btn" type="button">Start Quiz</button>
+      <button onclick="window.location.href='profile.html'" type="button">📊 View My Profile</button>
+      <button onclick="window.location.href='login.html'" type="button">🚪 Logout</button>
+    </div>
   </div>
 
-  <script src="https://cdn.jsdelivr.net/npm/papaparse@5.4.1/papaparse.min.js"></script>
   <script>
     const currentUser = sessionStorage.getItem("userId");
     if (!currentUser) window.location.href = "login.html";
-    else document.getElementById("welcome-msg").textContent = `👋 Hello, ${currentUser}! Ready to quiz?`;
+    else document.getElementById("user-label").textContent = `👋 Hello, ${currentUser}`;
 
-    document.getElementById("logout-btn").onclick = () => {
-      sessionStorage.clear();
-      window.location.href = "login.html";
-    };
-
-    const csvUrl = "https://docs.google.com/spreadsheets/d/e/2PACX-1vSeMq5VrWndE6OZqE4aSrpj-MQhSYp5g7OlhZCY9cy1giwPhpyiIkQGCvzFA6-Ae-cGI6ICPkfy1o4F/pub?output=csv";
-
-    Papa.parse(csvUrl, {
-      download: true,
-      header: true,
-      complete: function(results) {
-        const chapters = [...new Set(results.data.map(r => r["Chapter"]).filter(Boolean))];
-        const select = document.getElementById("chapter-select");
-        chapters.forEach(ch => {
-          const opt = document.createElement("option");
-          opt.value = ch;
-          opt.textContent = ch;
-          select.appendChild(opt);
-        });
-        select.onchange = () => {
-          document.getElementById("start-btn").disabled = !select.value;
-        };
-        document.getElementById("start-btn").onclick = () => {
-          sessionStorage.setItem("selectedChapter", select.value);
-          sessionStorage.setItem("username", currentUser);
-          window.location.href = "quiz.html";
-        };
+    document.getElementById("start-btn").onclick = () => {
+      const selectedChapter = document.getElementById("chapter-select").value;
+      if (!selectedChapter) {
+        alert("⚠️ Please select a chapter first!");
+        return;
       }
-    });
+      sessionStorage.setItem("selectedChapter", selectedChapter);
+      window.location.href = "quiz.html";
+    };
   </script>
+
 </body>
 </html>
