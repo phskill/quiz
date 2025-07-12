@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Login to Your Quiz Profile</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+  <h1>🔐 Login to Your Account</h1>
+
+  <div id="login-container">
+    <input type="text" id="login-user" placeholder="User ID" />
+    <input type="password" id="login-pass" placeholder="Password" />
+    <button id="login-btn">Login</button>
+    <div id="login-status"></div>
+  </div>
+
+  <script>
+    async function hashPassword(password) {
+      const msgBuffer = new TextEncoder().encode(password);
+      const hashBuffer = await crypto.subtle.digest('SHA-256', msgBuffer);
+      const hashArray = Array.from(new Uint8Array(hashBuffer));
+      return hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
+    }
+
+    const webAppUrl = "https://script.google.com/macros/s/AKfycbyayo8phYFtrOFXsP_ZD28OgqRbXUEw9kJAGwRcoIfKt6Tyaj5DNy17oSRzwCAV4elqBA/exec";
+
+    document.getElementById("login-btn").onclick = async () => {
+      const userId = document.getElementById("login-user").value.trim();
+      const password = document.getElementById("login-pass").value;
+
+      if (!userId || !password) {
+        document.getElementById("login-status").textContent = "⚠️ Please enter both fields.";
+        return;
+      }
+
+      const hashedPass = await hashPassword(password);
+
+      fetch(webAppUrl, {
+        method: "POST",
+        body: JSON.stringify({
+          mode: "login",
+          userId: userId,
+          password: hashedPass
+        }),
+        headers: {
+          "Content-Type": "application/json"
+        }
+      })
+      .then(res => res.text())
+      .then(response => {
+        if (response === "Login successful") {
+          sessionStorage.setItem("userId", userId);
+          document.getElementById("login-status").textContent = "✅ Logged in!";
+          setTimeout(() => {
+            window.location.href = "index.html";
+          }, 1000);
+        } else {
+          document.getElementById("login-status").textContent = "❌ Invalid credentials.";
+        }
+      });
+    };
+  </script>
+</body>
+</html>
