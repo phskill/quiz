@@ -19,20 +19,24 @@ Papa.parse(csvUrl, {
 
 function startQuiz(questionsArray) {
   showQuestion(questionsArray);
-  
+
   function showQuestion(questions) {
     const q = questions[currentQuestion];
+
     const container = document.createElement('div');
     container.className = 'question-container';
 
+    // 🧠 Question number and text
     const title = document.createElement('h3');
-    title.textContent = q.text;
+    title.textContent = `Question ${currentQuestion + 1}: ${q.text}`;
     container.appendChild(title);
 
+    // 🅰️🅱️🆎🆑 Option labels
+    const optionLabels = ['A', 'B', 'C', 'D'];
     q.options.forEach((opt, i) => {
       const btn = document.createElement('label');
       btn.className = 'answer';
-      btn.innerHTML = `<input type="radio" name="answer" value="${i}"> ${opt}`;
+      btn.innerHTML = `<input type="radio" name="answer" value="${i}"> <strong>${optionLabels[i]}.</strong> ${opt}`;
       container.appendChild(btn);
     });
 
@@ -45,6 +49,7 @@ function startQuiz(questionsArray) {
       const selectedIndex = parseInt(selected.value);
       const allOptions = container.querySelectorAll('.answer');
 
+      // 🔍 Highlight correct/incorrect
       allOptions.forEach((opt, i) => {
         if (i === q.answer) {
           opt.classList.add('correct');
@@ -62,7 +67,7 @@ function startQuiz(questionsArray) {
           container.remove();
           currentQuestion++;
 
-          // 🟢 Update progress
+          // 📊 Update progress bar & percentage
           const percent = Math.round((currentQuestion / questions.length) * 100);
           document.getElementById('progress-bar').style.width = `${percent}%`;
           document.getElementById('percent-display').textContent = `Completed: ${percent}%`;
