@@ -50,7 +50,17 @@ function startQuiz(questionsArray) {
     submitBtn.textContent = "Submit";
     submitBtn.onclick = () => {
       const selected = container.querySelector('input[name="answer"]:checked');
-      if (!selected) return;
+     if (!selected) {
+  const alert = document.getElementById("alert-box");
+  alert.textContent = "⚠️ Please select an answer before submitting.";
+  alert.style.display = "block";
+
+  setTimeout(() => {
+    alert.style.display = "none";
+  }, 2000);
+  return;
+}
+
 
       const selectedIndex = parseInt(selected.value);
       const allOptions = container.querySelectorAll('.answer');
