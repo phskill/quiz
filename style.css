@@ -1,13 +1,16 @@
+/* === Base Layout === */
 body {
   font-family: "Segoe UI", sans-serif;
   background-color: #111;
   color: #fff;
   padding: 30px;
   text-align: center;
+  margin: 0;
 }
 
+/* === Page Title === */
 h1 {
-  margin-bottom: 10px;
+  margin-bottom: 15px;
   padding: 15px 30px;
   border: 2px solid #00ffcc;
   border-radius: 10px;
@@ -21,9 +24,10 @@ h1 {
   letter-spacing: 1px;
 }
 
+/* === Chapter Selection Panel === */
 #chapter-select-container {
   margin: 30px auto;
-  padding: 15px;
+  padding: 20px;
   border: 2px solid #00ffcc;
   border-radius: 10px;
   background-color: #222;
@@ -34,7 +38,7 @@ h1 {
 #chapter-select {
   padding: 10px;
   font-size: 16px;
-  margin-right: 10px;
+  margin-right: 12px;
   border-radius: 5px;
   border: none;
   background-color: #333;
@@ -56,8 +60,8 @@ h1 {
   background-color: #2980b9;
 }
 
-#chapter-progress-info,
-#percent-display {
+/* === Progress Tracking === */
+#chapter-progress-info {
   font-size: 16px;
   margin-bottom: 10px;
   color: #00ffcc;
@@ -80,6 +84,7 @@ h1 {
   border-radius: 5px;
 }
 
+/* === Question Styling === */
 .question-container {
   background-color: #222;
   padding: 20px;
@@ -97,25 +102,27 @@ h1 {
   transform: translateY(50px);
 }
 
+/* === Answer Buttons === */
 .answer {
   display: block;
-  margin: 10px;
+  margin: 12px;
   cursor: pointer;
   border: 2px solid transparent;
-  padding: 10px;
+  padding: 12px;
   border-radius: 5px;
   background-color: #333;
   color: #fff;
   text-align: left;
-}
-
-.answer:hover {
-  background-color: #444;
+  font-size: 16px;
 }
 
 .answer strong {
   margin-right: 6px;
   color: #00ffcc;
+}
+
+.answer:hover {
+  background-color: #444;
 }
 
 .answer.correct {
@@ -130,9 +137,10 @@ h1 {
   color: #000;
 }
 
+/* === Buttons (Submit etc.) === */
 button {
   margin-top: 20px;
-  padding: 10px 20px;
+  padding: 10px 22px;
   font-size: 16px;
   cursor: pointer;
   background-color: #3498db;
@@ -145,12 +153,13 @@ button:hover {
   background-color: #2980b9;
 }
 
+/* === Result Section === */
 .result {
   margin-top: 40px;
   font-size: 20px;
   color: #00ffcc;
   background-color: #222;
-  padding: 20px;
+  padding: 25px;
   border-radius: 10px;
   box-shadow: 0 0 10px rgba(0, 255, 204, 0.3);
   max-width: 600px;
@@ -168,6 +177,8 @@ button:hover {
   margin-top: 15px;
   color: #ffffff;
 }
+
+/* === Mobile-Friendly Layout === */
 @media screen and (max-width: 600px) {
   body {
     padding: 15px;
@@ -178,8 +189,11 @@ button:hover {
     padding: 10px 20px;
   }
 
-  .question-container {
+  .question-container,
+  .result {
     padding: 15px;
+    max-width: 100%;
+    box-sizing: border-box;
   }
 
   #chapter-select,
@@ -193,7 +207,15 @@ button:hover {
     font-size: 14px;
   }
 
+  .answer {
+    font-size: 14px;
+  }
+
   .result {
     font-size: 18px;
+  }
+
+  .result .celebration {
+    font-size: 20px;
   }
 }
