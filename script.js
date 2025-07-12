@@ -3,7 +3,7 @@ const selectedChapter = sessionStorage.getItem("selectedChapter");
 if (!currentUser || !selectedChapter) window.location.href = "login.html";
 
 document.getElementById("chapter-name").textContent = `📘 ${selectedChapter}`;
-const webAppUrl = "https://script.google.com/macros/s/AKfycbyayo8phYFtrOFXsP_ZD28OgqRbXUEw9kJAGwRcoIfKt6Tyaj5DNy17oSRzwCAV4elqBA/exec";
+const webAppUrl = "https://script.google.com/macros/s/AKfycbwQBF2KwBonAe0SifJdJF1N2xLSn1vS1V3p84siclSaxaarF2-LZHNZzdqvrU4ynFWz/exec";
 const csvUrl = "https://docs.google.com/spreadsheets/d/e/2PACX-1vSeMq5VrWndE6OZqE4aSrpj-MQhSYp5g7OlhZCY9cy1giwPhpyiIkQGCvzFA6-Ae-cGI6ICPkfy1o4F/pub?output=csv";
 
 let questionsArray = [];
@@ -29,7 +29,7 @@ function displayQuestion() {
   document.getElementById("question-text").textContent = q["Question"];
   document.getElementById("next-btn").disabled = true;
 
-  const correctIndex = parseInt(q["Answer"]); // correct option index is 1-based
+  const correctIndex = parseInt(q["Answer"]); // 1-based
   const allOptions = [
     { text: q["Option1"], isCorrect: correctIndex === 1 },
     { text: q["Option2"], isCorrect: correctIndex === 2 },
