@@ -55,12 +55,16 @@ function startQuiz(questionsArray) {
   alert.textContent = "⚠️ Please select an answer before submitting.";
   alert.style.display = "block";
 
+  // Trigger mobile vibration if supported
+  if (navigator.vibrate) {
+    navigator.vibrate(200); // vibrate for 200 milliseconds
+  }
+
   setTimeout(() => {
     alert.style.display = "none";
   }, 2000);
   return;
 }
-
 
       const selectedIndex = parseInt(selected.value);
       const allOptions = container.querySelectorAll('.answer');
