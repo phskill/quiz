@@ -1,256 +1,140 @@
-/* === Base Layout === */
+/* 🌌 Base Layout */
 body {
-  font-family: "Segoe UI", sans-serif;
-  background-color: #111;
-  color: #fff;
-  padding: 30px;
+  background: linear-gradient(to right, #0f2027, #203a43, #2c5364);
+  font-family: 'Segoe UI', sans-serif;
+  color: #f0f0f0;
   text-align: center;
+  padding: 2rem;
   margin: 0;
 }
 
-/* === Page Title === */
 h1 {
-  margin-bottom: 15px;
-  padding: 15px 30px;
-  border: 2px solid #00ffcc;
-  border-radius: 10px;
-  background: linear-gradient(135deg, #111, #222);
-  box-shadow: 0 0 20px rgba(0, 255, 204, 0.3);
-  display: inline-block;
-  color: #00ffcc;
-  font-size: 28px;
-  font-weight: bold;
-  text-transform: uppercase;
-  letter-spacing: 1px;
-}
-
-/* === Chapter Selection Panel === */
-#chapter-select-container {
-  margin: 30px auto;
-  padding: 20px;
-  border: 2px solid #00ffcc;
-  border-radius: 10px;
-  background-color: #222;
-  box-shadow: 0 0 15px rgba(0, 255, 204, 0.3);
-  max-width: 600px;
-}
-
-#chapter-select {
-  padding: 10px;
-  font-size: 16px;
-  margin-right: 12px;
-  border-radius: 5px;
-  border: none;
-  background-color: #333;
+  font-size: 2.5rem;
   color: #fff;
+  margin-bottom: 1rem;
+  text-shadow: 0 0 10px #00f2ff, 0 0 20px #00f2ff;
 }
 
-#start-btn {
-  padding: 10px 18px;
-  font-size: 16px;
-  cursor: pointer;
-  background-color: #3498db;
-  color: white;
-  border: none;
-  border-radius: 5px;
-  transition: background-color 0.3s ease;
-}
-
-#start-btn:hover {
-  background-color: #2980b9;
-}
-
-/* === Progress Tracking === */
-#chapter-progress-info {
-  font-size: 16px;
-  margin-bottom: 10px;
-  color: #00ffcc;
-}
-
-#progress-container {
-  width: 100%;
-  max-width: 600px;
-  height: 10px;
-  background-color: #444;
-  margin: 10px auto 30px;
-  border-radius: 5px;
-}
-
-#progress-bar {
-  width: 0%;
-  height: 100%;
-  background-color: #00ffcc;
-  transition: width 0.3s ease;
-  border-radius: 5px;
-}
-
-/* === Question Styling === */
-.question-container {
-  background-color: #222;
-  padding: 20px;
-  border-radius: 10px;
-  box-shadow: 0 0 10px #000;
-  max-width: 600px;
-  margin: auto;
-  opacity: 1;
-  transform: translateY(0);
-  transition: opacity 0.5s ease, transform 0.5s ease;
-}
-
-.question-container.hidden {
-  opacity: 0;
-  transform: translateY(50px);
-}
-
-/* === Answer Buttons === */
-.answer {
-  display: block;
-  margin: 12px;
-  cursor: pointer;
-  border: 2px solid transparent;
-  padding: 12px;
-  border-radius: 5px;
-  background-color: #333;
+h2, h3 {
+  margin: 0.5rem 0 1rem;
   color: #fff;
-  text-align: left;
-  font-size: 16px;
+  text-shadow: 0 0 6px #ffffff44;
 }
 
-.answer strong {
-  margin-right: 6px;
-  color: #00ffcc;
+/* 🔲 Containers */
+#login-container,
+#signup-container,
+#chapter-select-container,
+#quiz-box,
+#result-box,
+#quiz-history {
+  background: rgba(255, 255, 255, 0.08);
+  padding: 2rem;
+  border-radius: 12px;
+  box-shadow: 0 0 15px rgba(0, 255, 255, 0.3);
+  max-width: 500px;
+  margin: 1rem auto;
 }
 
-.answer:hover {
-  background-color: #444;
+/* 📥 Form Inputs */
+input[type="text"],
+input[type="password"],
+select {
+  width: 80%;
+  padding: 0.8rem;
+  margin: 0.5rem 0;
+  border: none;
+  border-radius: 6px;
+  font-size: 1rem;
+  box-shadow: 0 0 8px rgba(255, 255, 255, 0.2);
 }
 
-.answer.correct {
-  background-color: #2ecc71;
-  border-color: #27ae60;
-  color: #000;
-}
-
-.answer.incorrect {
-  background-color: #e74c3c;
-  border-color: #c0392b;
-  color: #000;
-}
-
-/* === Buttons (Submit etc.) === */
+/* 🔘 Buttons */
 button {
-  margin-top: 20px;
-  padding: 10px 22px;
-  font-size: 16px;
-  cursor: pointer;
-  background-color: #3498db;
-  color: white;
+  padding: 0.7rem 1.5rem;
+  background-color: #00f2ff;
+  color: #000;
   border: none;
-  border-radius: 5px;
+  border-radius: 6px;
+  font-weight: bold;
+  font-size: 1rem;
+  margin: 0.5rem;
+  cursor: pointer;
+  transition: all 0.2s ease-in-out;
 }
 
 button:hover {
-  background-color: #2980b9;
+  transform: scale(1.05);
+  background-color: #00ffe6;
+  box-shadow: 0 0 15px #00ffe6;
 }
-#back-btn, #restart-btn {
-  margin: 10px;
-  padding: 10px 18px;
-  font-size: 16px;
-  background-color: #27ae60;
-  color: white;
-  border: none;
-  border-radius: 5px;
+
+/* 📋 Status and Messages */
+#login-status,
+#signup-status,
+#score-result {
+  margin-top: 1rem;
+  font-size: 1rem;
+  color: #ffdf00;
+  text-shadow: 0 0 5px #ffdf00;
+}
+
+/* ❓ Quiz Options */
+#options-list {
+  list-style-type: none;
+  padding: 0;
+  margin: 1rem auto;
+  max-width: 400px;
+}
+
+.option-item {
+  background: rgba(255,255,255,0.1);
+  margin: 0.5rem 0;
+  padding: 0.8rem;
+  border-radius: 8px;
   cursor: pointer;
+  transition: background 0.3s;
 }
 
-#back-btn:hover, #restart-btn:hover {
-  background-color: #219150;
-}
-/* === Result Section === */
-.result {
-  margin-top: 40px;
-  font-size: 20px;
-  color: #00ffcc;
-  background-color: #222;
-  padding: 25px;
-  border-radius: 10px;
-  box-shadow: 0 0 10px rgba(0, 255, 204, 0.3);
-  max-width: 600px;
-  margin-left: auto;
-  margin-right: auto;
-  line-height: 1.6;
+.option-item:hover {
+  background: rgba(255,255,255,0.2);
 }
 
-.result div {
-  margin-bottom: 12px;
+.option-item.selected {
+  background-color: #00ffe6;
+  color: #000;
+  font-weight: bold;
 }
 
-.result .celebration {
-  font-size: 24px;
-  margin-top: 15px;
-  color: #ffffff;
+/* 📊 Tables */
+table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 1rem;
 }
 
-/* === Mobile-Friendly Layout === */
+th, td {
+  border: 1px solid #aaa;
+  padding: 0.6rem;
+  background: rgba(255,255,255,0.1);
+  color: #fff;
+}
+
+/* 📱 Responsive */
 @media screen and (max-width: 600px) {
   body {
-    padding: 15px;
+    padding: 1rem;
   }
 
-  h1 {
-    font-size: 22px;
-    padding: 10px 20px;
+  input, select {
+    width: 100%;
   }
 
-  .question-container,
-  .result {
-    padding: 15px;
-    max-width: 100%;
-    box-sizing: border-box;
+  #login-container,
+  #signup-container,
+  #chapter-select-container,
+  #quiz-box,
+  #result-box {
+    padding: 1rem;
   }
-
-  #chapter-select,
-  #start-btn,
-  button {
-    font-size: 14px;
-    padding: 8px 12px;
-  }
-
-  #chapter-progress-info {
-    font-size: 14px;
-  }
-
-  .answer {
-    font-size: 14px;
-  }
-
-  .result {
-    font-size: 18px;
-  }
-
-  .result .celebration {
-    font-size: 20px;
-  
-  }
-#alert-box {
-  max-width: 600px;
-  margin: 0 auto 20px;
-  padding: 12px;
-  background-color: #ff4d4d;
-  color: #fff;
-  border-radius: 5px;
-  font-size: 16px;
-  font-weight: bold;
-  box-shadow: 0 0 10px rgba(255, 77, 77, 0.4);
-  animation: shake 0.3s ease;
-}
-
-@keyframes shake {
-  0% { transform: translateX(0); }
-  25% { transform: translateX(-5px); }
-  50% { transform: translateX(5px); }
-  75% { transform: translateX(-5px); }
-  100% { transform: translateX(0); }
-}
-  
 }
