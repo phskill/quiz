@@ -1,12 +1,12 @@
 const userName = sessionStorage.getItem("username");
 const selectedChapter = sessionStorage.getItem("selectedChapter");
-document.getElementById("chapter-name").textContent = selectedChapter;
-const csvUrl = "https://docs.google.com/spreadsheets/d/e/2PACX-1vSeMq5VrWndE6OZqE4aSrpj-MQhSYp5g7OlhZCY9cy1giwPhpyiIkQGCvzFA6-Ae-cGI6ICPkfy1o4F/pub?output=csv";
 
-const selectedChapter = sessionStorage.getItem("selectedChapter");
-if (document.getElementById("chapter-name")) {
-  document.getElementById("chapter-name").textContent = selectedChapter;
+const chapterNameEl = document.getElementById("chapter-name");
+if (chapterNameEl) {
+  chapterNameEl.textContent = selectedChapter;
 }
+
+const csvUrl = "https://docs.google.com/spreadsheets/d/e/2PACX-1vSeMq5VrWndE6OZqE4aSrpj-MQhSYp5g7OlhZCY9cy1giwPhpyiIkQGCvzFA6-Ae-cGI6ICPkfy1o4F/pub?output=csv";
 
 let currentQuestion = 0;
 let score = 0;
@@ -21,7 +21,8 @@ Papa.parse(csvUrl, {
       .map(row => ({
         text: row["Question"],
         options: [row["Option1"], row["Option2"], row["Option3"], row["Option4"]],
-        answer: parseInt(row["AnswerIndex"])
+        answer: parseInt(row["AnswerIndex"]),
+        userChoice: undefined
       }));
 
     startQuiz(chapterQuestions);
@@ -53,23 +54,24 @@ function startQuiz(questionsArray) {
     submitBtn.textContent = "Submit";
     submitBtn.onclick = () => {
       const selected = container.querySelector('input[name="answer"]:checked');
-     if (!selected) {
-  const alert = document.getElementById("alert-box");
-  alert.textContent = "⚠️ Please select an answer before submitting.";
-  alert.style.display = "block";
+      if (!selected) {
+        const alert = document.getElementById("alert-box");
+        alert.textContent = "⚠️ Please select an answer before submitting.";
+        alert.style.display = "block";
 
-  // Trigger mobile vibration if supported
-  if (navigator.vibrate) {
-    navigator.vibrate(200); // vibrate for 200 milliseconds
-  }
+        if (navigator.vibrate) {
+          navigator.vibrate(200);
+        }
 
-  setTimeout(() => {
-    alert.style.display = "none";
-  }, 2000);
-  return;
-}
+        setTimeout(() => {
+          alert.style.display = "none";
+        }, 2000);
+        return;
+      }
 
       const selectedIndex = parseInt(selected.value);
+      questionsArray[currentQuestion].userChoice = selectedIndex;
+
       const allOptions = container.querySelectorAll('.answer');
 
       allOptions.forEach((opt, i) => {
@@ -120,45 +122,74 @@ function showFinalResult(questionsArray) {
   const scoreRatio = score / questionsArray.length;
   let message = "";
 
-    document.getElementById("back-btn").style.display = "inline-block";
-document.getElementById("restart-btn").style.display = "inline-block";
+  const webAppUrl = "https://script.google.com/macros/s/AKfycbzE18ZtAIm4vL3MFecNfg6k8MZQranv8CHlZhcUg9JrALCuuKDKcydxvluIspFK3yZ-FA/exec";
+  const wrongAnswers = [];
 
-document.getElementById("back-btn").onclick = () => {
-  window.location.href = "index.html";
-};
+  questionsArray.forEach(q => {
+    const selected = q.userChoice;
+    if (selected !== undefined && selected !== q.answer) {
+      wrongAnswers.push({
+        question: q.text,
+        chosenAnswer: q.options[selected],
+        correctAnswer: q.options[q.answer]
+      });
+    }
+  });
 
-document.getElementById("restart-btn").onclick = () => {
-  currentQuestion = 0;
-  score = 0;
-  document.getElementById("quiz").innerHTML = "";
-  document.getElementById("result").style.display = "none";
-  document.getElementById("back-btn").style.display = "none";
-  document.getElementById("restart-btn").style.display = "none";
-  document.getElementById("progress-bar").style.width = "0%";
-  document.getElementById("share-btn").style.display = "none";
-  startQuiz(questionsArray);
-};
+  wrongAnswers.forEach(item => {
+    fetch(webAppUrl, {
+      method: "POST",
+      body: JSON.stringify({
+        user: userName,
+        chapter: selectedChapter,
+        score: `${score} / ${questionsArray.length}`,
+        wrongQuestion: item.question,
+        chosenAnswer: item.chosenAnswer,
+        correctAnswer: item.correctAnswer
+      }),
+      headers: {
+        "Content-Type": "application/json"
+      }
+    }).catch(err => console.error("Failed to send data:", err));
+  });
 
-  
-document.getElementById("share-btn").style.display = "inline-block";
+  document.getElementById("back-btn").style.display = "inline-block";
+  document.getElementById("restart-btn").style.display = "inline-block";
 
-document.getElementById("share-btn").onclick = () => {
-  const shareText = `I just scored ${score} out of ${questionsArray.length} in the "${selectedChapter}" quiz! 🧠🎉`;
-  
-  if (navigator.share) {
-    navigator.share({
-      title: "My Quiz Result",
-      text: shareText,
-      url: window.location.href
-    }).then(() => {
-      console.log("Score shared successfully");
-    }).catch(err => {
-      console.log("Sharing failed:", err);
-    });
-  } else {
-    alert("Sharing isn't supported on your device. You can copy and share: \n\n" + shareText);
-  }
-};
+  document.getElementById("back-btn").onclick = () => {
+    window.location.href = "index.html";
+  };
+
+  document.getElementById("restart-btn").onclick = () => {
+    currentQuestion = 0;
+    score = 0;
+    document.getElementById("quiz").innerHTML = "";
+    document.getElementById("result").style.display = "none";
+    document.getElementById("back-btn").style.display = "none";
+    document.getElementById("restart-btn").style.display = "none";
+    document.getElementById("progress-bar").style.width = "0%";
+    document.getElementById("share-btn").style.display = "none";
+    startQuiz(questionsArray);
+  };
+
+  document.getElementById("share-btn").style.display = "inline-block";
+  document.getElementById("share-btn").onclick = () => {
+    const shareText = `I just scored ${score} out of ${questionsArray.length} in the "${selectedChapter}" quiz! 🧠🎉`;
+    if (navigator.share) {
+      navigator.share({
+        title: "My Quiz Result",
+        text: shareText,
+        url: window.location.href
+      }).then(() => {
+        console.log("Score shared successfully");
+      }).catch(err => {
+        console.log("Sharing failed:", err);
+      });
+    } else {
+      alert("Sharing isn't supported on your device. You can copy and share: \n\n" + shareText);
+    }
+  };
+
   const badResults = [
     "Don't worry, every expert was once a beginner 💪",
     "Mistakes are proof you're trying 💡",
@@ -220,6 +251,5 @@ document.getElementById("share-btn").onclick = () => {
     ${celebration}
   `;
 
-  // Final progress update
   updateProgressInfo(questionsArray);
 }
