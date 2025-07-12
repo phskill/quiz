@@ -168,3 +168,32 @@ button:hover {
   margin-top: 15px;
   color: #ffffff;
 }
+@media screen and (max-width: 600px) {
+  body {
+    padding: 15px;
+  }
+
+  h1 {
+    font-size: 22px;
+    padding: 10px 20px;
+  }
+
+  .question-container {
+    padding: 15px;
+  }
+
+  #chapter-select,
+  #start-btn,
+  button {
+    font-size: 14px;
+    padding: 8px 12px;
+  }
+
+  #chapter-progress-info {
+    font-size: 14px;
+  }
+
+  .result {
+    font-size: 18px;
+  }
+}
