@@ -26,12 +26,12 @@ function startQuiz(questionsArray) {
     const container = document.createElement('div');
     container.className = 'question-container';
 
-    // 🧠 Question number and text
+    // 🧠 Show question number and text
     const title = document.createElement('h3');
     title.textContent = `Question ${currentQuestion + 1}: ${q.text}`;
     container.appendChild(title);
 
-    // 🅰️🅱️🆎🆑 Option labels
+    // 🅰️ Label options as A, B, C, D
     const optionLabels = ['A', 'B', 'C', 'D'];
     q.options.forEach((opt, i) => {
       const btn = document.createElement('label');
@@ -49,7 +49,6 @@ function startQuiz(questionsArray) {
       const selectedIndex = parseInt(selected.value);
       const allOptions = container.querySelectorAll('.answer');
 
-      // 🔍 Highlight correct/incorrect
       allOptions.forEach((opt, i) => {
         if (i === q.answer) {
           opt.classList.add('correct');
@@ -67,16 +66,17 @@ function startQuiz(questionsArray) {
           container.remove();
           currentQuestion++;
 
-          // 📊 Update progress bar & percentage
-          const percent = Math.round((currentQuestion / questions.length) * 100);
+          // ✅ Update progress bar and percentage
+          const percent = Math.round((currentQuestion / questionsArray.length) * 100);
           document.getElementById('progress-bar').style.width = `${percent}%`;
           document.getElementById('percent-display').textContent = `Completed: ${percent}%`;
 
-          if (currentQuestion < questions.length) {
-            showQuestion(questions);
+          if (currentQuestion < questionsArray.length) {
+            showQuestion(questionsArray);
           } else {
+            // 🎯 Show final score only at end
             document.getElementById('result').style.display = 'block';
-            document.getElementById('result').textContent = `Your score: ${score} / ${questions.length}`;
+            document.getElementById('result').textContent = `Your score: ${score} / ${questionsArray.length}`;
           }
         }, 500);
       }, 1000);
