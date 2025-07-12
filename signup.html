@@ -31,9 +31,9 @@
         .map(b => b.toString(16).padStart(2, "0")).join("");
     }
 
-    const proxyUrl = "https://corsproxy.io/";
+    const proxyUrl = "https://thingproxy.freeboard.io/fetch/";
     const webAppUrl = "https://script.google.com/macros/s/AKfycbwQBF2KwBonAe0SifJdJF1N2xLSn1vS1V3p84siclSaxaarF2-LZHNZzdqvrU4ynFWz/exec";
-    const fullUrl = proxyUrl + webAppUrl;
+    const fullUrl = proxyUrl + encodeURIComponent(webAppUrl);
 
     document.getElementById("signup-btn").onclick = async () => {
       const userId = document.getElementById("signup-user").value.trim();
