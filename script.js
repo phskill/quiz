@@ -102,6 +102,26 @@ function updateProgressInfo(questionsArray) {
 function showFinalResult(questionsArray) {
   const scoreRatio = score / questionsArray.length;
   let message = "";
+
+    document.getElementById("back-btn").style.display = "inline-block";
+document.getElementById("restart-btn").style.display = "inline-block";
+
+document.getElementById("back-btn").onclick = () => {
+  window.location.href = "index.html";
+};
+
+document.getElementById("restart-btn").onclick = () => {
+  currentQuestion = 0;
+  score = 0;
+  document.getElementById("quiz").innerHTML = "";
+  document.getElementById("result").style.display = "none";
+  document.getElementById("back-btn").style.display = "none";
+  document.getElementById("restart-btn").style.display = "none";
+  document.getElementById("progress-bar").style.width = "0%";
+  startQuiz(questionsArray);
+};
+
+  
 document.getElementById("share-btn").style.display = "inline-block";
 
 document.getElementById("share-btn").onclick = () => {
@@ -181,23 +201,6 @@ document.getElementById("share-btn").onclick = () => {
     <div style="margin-top: 10px;">${message}</div>
     ${celebration}
   `;
-  document.getElementById("back-btn").style.display = "inline-block";
-document.getElementById("restart-btn").style.display = "inline-block";
-
-document.getElementById("back-btn").onclick = () => {
-  window.location.href = "index.html";
-};
-
-document.getElementById("restart-btn").onclick = () => {
-  currentQuestion = 0;
-  score = 0;
-  document.getElementById("quiz").innerHTML = "";
-  document.getElementById("result").style.display = "none";
-  document.getElementById("back-btn").style.display = "none";
-  document.getElementById("restart-btn").style.display = "none";
-  document.getElementById("progress-bar").style.width = "0%";
-  startQuiz(questionsArray);
-};
 
   // Final progress update
   updateProgressInfo(questionsArray);
