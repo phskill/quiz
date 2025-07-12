@@ -118,6 +118,7 @@ document.getElementById("restart-btn").onclick = () => {
   document.getElementById("back-btn").style.display = "none";
   document.getElementById("restart-btn").style.display = "none";
   document.getElementById("progress-bar").style.width = "0%";
+  document.getElementById("share-btn").style.display = "none";
   startQuiz(questionsArray);
 };
 
