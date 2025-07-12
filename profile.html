@@ -2,21 +2,17 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
   <title>My Quiz Profile</title>
   <link rel="stylesheet" href="style.css" />
 </head>
 <body>
 
-  <h1>📊 My Quiz Profile</h1>
-  <h2 id="user-greeting"></h2>
-
-  <button id="logout-btn">🚪 Logout</button>
-  <button onclick="window.location.href='index.html'">🏠 Back to Dashboard</button>
+  <h1>📊 My Quiz Performance</h1>
+  <h2 id="user-id-label"></h2>
 
   <div id="quiz-history">
-    <h3>📝 Past Attempts</h3>
-    <table border="1">
+    <table>
       <thead>
         <tr>
           <th>Chapter</th>
@@ -27,45 +23,69 @@
           <th>Correct Answer</th>
         </tr>
       </thead>
-      <tbody id="history-table"></tbody>
+      <tbody id="results-table">
+        <!-- Quiz history rows will be added here -->
+      </tbody>
     </table>
   </div>
+
+  <button onclick="window.location.href='index.html'" type="button">🏠 Back to Dashboard</button>
 
   <script src="https://cdn.jsdelivr.net/npm/papaparse@5.4.1/papaparse.min.js"></script>
   <script>
     const currentUser = sessionStorage.getItem("userId");
-    if (!currentUser) {
-      window.location.href = "login.html";
-    } else {
-      document.getElementById("user-greeting").textContent = `👋 Hello, ${currentUser}`;
-    }
+    if (!currentUser) window.location.href = "login.html";
+    else document.getElementById("user-id-label").textContent = `👤 User: ${currentUser}`;
 
-    document.getElementById("logout-btn").onclick = () => {
-      sessionStorage.clear();
-      window.location.href = "login.html";
-    };
+    const csvUrl = "https://docs.google.com/spreadsheets/d/e/2PACX-1vSeMq5VrWndE6OZqE4aSrpj-MQhSYp5g7OlhZCY9cy1giwPhpyiIkQGCvzFA6-Ae-cGI6ICPkfy1o4F/pub?output=csv";
 
-    const sheetUrl = "https://docs.google.com/spreadsheets/d/e/2PACX-1vSeMq5VrWndE6OZqE4aSrpj-MQhSYp5g7OlhZCY9cy1giwPhpyiIkQGCvzFA6-Ae-cGI6ICPkfy1o4F/pub?output=csv";
-
-    Papa.parse(sheetUrl, {
+    Papa.parse(csvUrl, {
       download: true,
       header: true,
       complete: function(results) {
-        const table = document.getElementById("history-table");
-        results.data.forEach(row => {
-          if (row["User"] === currentUser) {
-            const tr = document.createElement("tr");
-            tr.innerHTML = `
-              <td>${row["Chapter"]}</td>
-              <td>${row["Score"]}</td>
-              <td>${row["Timestamp"]}</td>
-              <td>${row["WrongQuestion"] || "-"}</td>
-              <td>${row["ChosenAnswer"] || "-"}</td>
-              <td>${row["CorrectAnswer"] || "-"}</td>
-            `;
-            table.appendChild(tr);
-          }
+        const userResults = results.data.filter(r => r["User"] === currentUser);
+        const tableBody = document.getElementById("results-table");
+
+        userResults.forEach(entry => {
+          const tr = document.createElement("tr");
+
+          const chapterCell = document.createElement("td");
+          chapterCell.textContent = entry["Chapter"];
+
+          const scoreCell = document.createElement("td");
+          scoreCell.textContent = entry["Score"];
+
+          const timestampCell = document.createElement("td");
+          timestampCell.textContent = entry["Timestamp"];
+
+          const wrongCell = document.createElement("td");
+          wrongCell.textContent = entry["WrongQuestion"] || "-";
+
+          const chosenCell = document.createElement("td");
+          chosenCell.textContent = entry["ChosenAnswer"] || "-";
+
+          const correctCell = document.createElement("td");
+          correctCell.textContent = entry["CorrectAnswer"] || "-";
+
+          tr.appendChild(chapterCell);
+          tr.appendChild(scoreCell);
+          tr.appendChild(timestampCell);
+          tr.appendChild(wrongCell);
+          tr.appendChild(chosenCell);
+          tr.appendChild(correctCell);
+
+          tableBody.appendChild(tr);
         });
+
+        if (userResults.length === 0) {
+          const tr = document.createElement("tr");
+          const td = document.createElement("td");
+          td.colSpan = 6;
+          td.textContent = "No quiz results found.";
+          td.style.textAlign = "center";
+          tr.appendChild(td);
+          tableBody.appendChild(tr);
+        }
       }
     });
   </script>
