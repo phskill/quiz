@@ -1,17 +1,23 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta charset="UTF-8" />
-  <title>Chapter Quiz Selector</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Welcome to Quiz</title>
   <link rel="stylesheet" href="style.css" />
 </head>
 <body>
 
-  <h1>📚 Choose Your Quiz Chapter</h1>
+  <h1>👤 Welcome to Your Quiz Portal</h1>
 
-  <div id="chapter-select-container">
-    <label for="chapter-select">Select a Chapter:</label>
+  <div id="user-input-container">
+    <label for="username">Enter Your Name:</label>
+    <input type="text" id="username" placeholder="e.g. Parikshit" />
+    <button id="login-btn">Login</button>
+  </div>
+
+  <div id="chapter-select-container" style="display: none;">
+    <h2>📚 Choose Your Quiz Chapter</h2>
     <select id="chapter-select">
       <option value="">--Choose--</option>
     </select>
@@ -22,34 +28,46 @@
   <script>
     const csvUrl = "https://docs.google.com/spreadsheets/d/e/2PACX-1vSeMq5VrWndE6OZqE4aSrpj-MQhSYp5g7OlhZCY9cy1giwPhpyiIkQGCvzFA6-Ae-cGI6ICPkfy1o4F/pub?output=csv";
 
-    Papa.parse(csvUrl, {
-      download: true,
-      header: true,
-      complete: function(results) {
-        const chapters = new Set();
-        results.data.forEach(row => {
-          if (row["Chapter"]) chapters.add(row["Chapter"]);
-        });
-
-        const select = document.getElementById("chapter-select");
-        chapters.forEach(ch => {
-          const opt = document.createElement("option");
-          opt.value = ch;
-          opt.textContent = ch;
-          select.appendChild(opt);
-        });
-
-        select.onchange = () => {
-          document.getElementById("start-btn").disabled = !select.value;
-        };
-
-        document.getElementById("start-btn").onclick = () => {
-          const chosen = select.value;
-          sessionStorage.setItem("selectedChapter", chosen);
-          window.location.href = "quiz.html";
-        };
+    document.getElementById("login-btn").onclick = () => {
+      const username = document.getElementById("username").value.trim();
+      if (!username) {
+        alert("Please enter your name to proceed.");
+        return;
       }
-    });
+      sessionStorage.setItem("username", username);
+
+      document.getElementById("user-input-container").style.display = "none";
+      document.getElementById("chapter-select-container").style.display = "block";
+
+      Papa.parse(csvUrl, {
+        download: true,
+        header: true,
+        complete: function(results) {
+          const chapters = new Set();
+          results.data.forEach(row => {
+            if (row["Chapter"]) chapters.add(row["Chapter"]);
+          });
+
+          const select = document.getElementById("chapter-select");
+          chapters.forEach(ch => {
+            const opt = document.createElement("option");
+            opt.value = ch;
+            opt.textContent = ch;
+            select.appendChild(opt);
+          });
+
+          select.onchange = () => {
+            document.getElementById("start-btn").disabled = !select.value;
+          };
+
+          document.getElementById("start-btn").onclick = () => {
+            const chosen = select.value;
+            sessionStorage.setItem("selectedChapter", chosen);
+            window.location.href = "quiz.html";
+          };
+        }
+      });
+    };
   </script>
 </body>
 </html>
