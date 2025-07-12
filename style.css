@@ -1,5 +1,5 @@
 body {
-  font-family: sans-serif;
+  font-family: "Segoe UI", sans-serif;
   background-color: #111;
   color: #fff;
   padding: 30px;
@@ -12,52 +12,51 @@ h1 {
   border: 2px solid #00ffcc;
   border-radius: 10px;
   background: linear-gradient(135deg, #111, #222);
-  box-shadow: 0 0 20px rgba(0, 255, 204, 0.4);
+  box-shadow: 0 0 20px rgba(0, 255, 204, 0.3);
   display: inline-block;
   color: #00ffcc;
-  font-size: 26px;
+  font-size: 28px;
   font-weight: bold;
   text-transform: uppercase;
   letter-spacing: 1px;
 }
 
 #chapter-select-container {
-  margin-bottom: 30px;
+  margin: 30px auto;
   padding: 15px;
   border: 2px solid #00ffcc;
   border-radius: 10px;
   background-color: #222;
-  box-shadow: 0 0 15px rgba(0, 255, 204, 0.4);
+  box-shadow: 0 0 15px rgba(0, 255, 204, 0.3);
   max-width: 600px;
-  margin: 30px auto;
 }
 
 #chapter-select {
-  padding: 8px;
+  padding: 10px;
   font-size: 16px;
   margin-right: 10px;
+  border-radius: 5px;
+  border: none;
+  background-color: #333;
+  color: #fff;
 }
 
 #start-btn {
-  padding: 8px 16px;
+  padding: 10px 18px;
   font-size: 16px;
   cursor: pointer;
   background-color: #3498db;
   color: white;
   border: none;
   border-radius: 5px;
+  transition: background-color 0.3s ease;
 }
 
 #start-btn:hover {
   background-color: #2980b9;
 }
 
-#chapter-progress-info {
-  font-size: 16px;
-  margin-bottom: 10px;
-  color: #00ffcc;
-}
-
+#chapter-progress-info,
 #percent-display {
   font-size: 16px;
   margin-bottom: 10px;
@@ -107,15 +106,16 @@ h1 {
   border-radius: 5px;
   background-color: #333;
   color: #fff;
+  text-align: left;
+}
+
+.answer:hover {
+  background-color: #444;
 }
 
 .answer strong {
   margin-right: 6px;
   color: #00ffcc;
-}
-
-.answer:hover {
-  background-color: #444;
 }
 
 .answer.correct {
@@ -148,4 +148,5 @@ button:hover {
 .result {
   margin-top: 30px;
   font-size: 20px;
+  color: #00ffcc;
 }
