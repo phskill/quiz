@@ -15,7 +15,7 @@ h1 {
   text-shadow: 0 0 10px #00f2ff, 0 0 20px #00f2ff;
 }
 
-h2, h3 {
+h2, h3, h4 {
   margin: 0.5rem 0 1rem;
   color: #fff;
   text-shadow: 0 0 6px #ffffff44;
