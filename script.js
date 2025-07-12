@@ -1,27 +1,27 @@
-const API_KEY = "AIzaSyCp7TU65xjCe-es224kMg2CLkI1p9lOv1M";
-const SPREADSHEET_ID = "1ORYvcif7ABs-TyhfL_Eju9kMcYpbBbaOo51TP53zvwg";
-const RANGE = "quiz-data!A2:F"; // Skip header row
-
-async function fetchQuizData() {
-  const url = `https://sheets.googleapis.com/v4/spreadsheets/${SPREADSHEET_ID}/values/${RANGE}?key=${API_KEY}`;
-  const response = await fetch(url);
-  const data = await response.json();
-
-  return data.values.map(row => ({
-    text: row[0],
-    options: row.slice(1, 5),
-    answer: parseInt(row[5])
-  }));
-}
+const csvUrl = "https://docs.google.com/spreadsheets/d/e/2PACX-1vSeMq5VrWndE6OZqE4aSrpj-MQhSYp5g7OlhZCY9cy1giwPhpyiIkQGCvzFA6-Ae-cGI6ICPkfy1o4F/pub?output=csv";
 
 let currentQuestion = 0;
 let score = 0;
 
-fetchQuizData().then(questions => {
-  showQuestion(questions);
+Papa.parse(csvUrl, {
+  download: true,
+  header: true,
+  complete: function(results) {
+    const data = results.data;
+    const questions = data.map(row => ({
+      text: row["Question"],
+      options: [row["Option1"], row["Option2"], row["Option3"], row["Option4"]],
+      answer: parseInt(row["AnswerIndex"])
+    }));
+    startQuiz(questions);
+  }
+});
 
-  function showQuestion(questionsArray) {
-    const q = questionsArray[currentQuestion];
+function startQuiz(questionsArray) {
+  showQuestion(questionsArray);
+  
+  function showQuestion(questions) {
+    const q = questions[currentQuestion];
     const container = document.createElement('div');
     container.className = 'question-container';
 
@@ -61,11 +61,10 @@ fetchQuizData().then(questions => {
         setTimeout(() => {
           container.remove();
           currentQuestion++;
-          if (currentQuestion < questionsArray.length) {
-            showQuestion(questionsArray);
+          if (currentQuestion < questions.length) {
+            showQuestion(questions);
           } else {
-            document.getElementById('result').textContent =
-              `Your score: ${score} / ${questionsArray.length}`;
+            document.getElementById('result').textContent = `Your score: ${score} / ${questions.length}`;
           }
         }, 500);
       }, 1000);
@@ -74,4 +73,4 @@ fetchQuizData().then(questions => {
     container.appendChild(submitBtn);
     document.getElementById('quiz').appendChild(container);
   }
-});
+}
