@@ -11,131 +11,23 @@
   <h1>🧠 Chapter Quiz</h1>
   <h2 id="chapter-name"></h2>
   <h3 id="question-counter"></h3>
+  <h4 id="timer-box">⏳ Time Left: 15</h4>
 
   <div id="quiz-box">
     <div id="question-text"></div>
     <ul id="options-list"></ul>
-    <button id="next-btn" disabled>Next</button>
+    <button id="next-btn" type="button" disabled>Next</button>
   </div>
 
   <div id="result-box" style="display: none;">
     <h2>✅ Quiz Complete</h2>
     <p id="score-result"></p>
     <button onclick="window.location.href='index.html'">🏠 Back to Dashboard</button>
-    <button onclick="window.location.href='profile.html'">📊 View Profile</button>
+    <button onclick="window.location.href='profile.html'">📊 View My Profile</button>
   </div>
 
+  <!-- Load CSV parser and custom script -->
   <script src="https://cdn.jsdelivr.net/npm/papaparse@5.4.1/papaparse.min.js"></script>
-  <script>
-    const currentUser = sessionStorage.getItem("userId");
-    const selectedChapter = sessionStorage.getItem("selectedChapter");
-    if (!currentUser || !selectedChapter) {
-      window.location.href = "login.html";
-    }
-
-    document.getElementById("chapter-name").textContent = `📘 ${selectedChapter}`;
-
-    const csvUrl = "https://docs.google.com/spreadsheets/d/e/2PACX-1vSeMq5VrWndE6OZqE4aSrpj-MQhSYp5g7OlhZCY9cy1giwPhpyiIkQGCvzFA6-Ae-cGI6ICPkfy1o4F/pub?output=csv";
-
-    let questionsArray = [];
-    let currentQuestion = 0;
-    let score = 0;
-
-    Papa.parse(csvUrl, {
-      download: true,
-      header: true,
-      complete: function(results) {
-        questionsArray = results.data.filter(row => row["Chapter"] === selectedChapter);
-        displayQuestion();
-      }
-    });
-
-    function displayQuestion() {
-      const q = questionsArray[currentQuestion];
-      document.getElementById("question-counter").textContent = `Question ${currentQuestion + 1} of ${questionsArray.length}`;
-      document.getElementById("question-text").textContent = q["Question"];
-      
-      const options = [q["Option1"], q["Option2"], q["Option3"], q["Option4"]];
-      const correctIndex = parseInt(q["Answer"]);
-      const optionsList = document.getElementById("options-list");
-      optionsList.innerHTML = "";
-
-      options.forEach((opt, i) => {
-        const li = document.createElement("li");
-        li.textContent = opt;
-        li.classList.add("option-item");
-        li.onclick = () => {
-          document.querySelectorAll(".option-item").forEach(el => el.classList.remove("selected"));
-          li.classList.add("selected");
-          questionsArray[currentQuestion].userChoice = i;
-          document.getElementById("next-btn").disabled = false;
-        };
-        optionsList.appendChild(li);
-      });
-
-      document.getElementById("next-btn").disabled = true;
-    }
-
-    document.getElementById("next-btn").onclick = () => {
-      const q = questionsArray[currentQuestion];
-      const chosen = q.userChoice;
-      const correct = parseInt(q["Answer"]);
-
-      if (chosen === correct) score++;
-
-      currentQuestion++;
-      if (currentQuestion < questionsArray.length) {
-        displayQuestion();
-      } else {
-        showResult();
-      }
-    };
-
-    function showResult() {
-      document.getElementById("quiz-box").style.display = "none";
-      document.getElementById("result-box").style.display = "block";
-      document.getElementById("score-result").textContent = `Your score: ${score} / ${questionsArray.length}`;
-
-      const wrongAnswers = questionsArray.filter(q => q.userChoice !== parseInt(q["Answer"]));
-      const webAppUrl = "https://script.google.com/macros/s/AKfycbyayo8phYFtrOFXsP_ZD28OgqRbXUEw9kJAGwRcoIfKt6Tyaj5DNy17oSRzwCAV4elqBA/exec";
-
-      wrongAnswers.forEach(q => {
-        const selected = q.userChoice;
-        fetch(webAppUrl, {
-          method: "POST",
-          body: JSON.stringify({
-            mode: "quizResult",
-            user: currentUser,
-            chapter: selectedChapter,
-            score: `${score} / ${questionsArray.length}`,
-            wrongQuestion: q["Question"],
-            chosenAnswer: q["Option" + (selected + 1)],
-            correctAnswer: q["Option" + (parseInt(q["Answer"]) + 1)]
-          }),
-          headers: {
-            "Content-Type": "application/json"
-          }
-        });
-      });
-
-      if (wrongAnswers.length === 0) {
-        fetch(webAppUrl, {
-          method: "POST",
-          body: JSON.stringify({
-            mode: "quizResult",
-            user: currentUser,
-            chapter: selectedChapter,
-            score: `${score} / ${questionsArray.length}`,
-            wrongQuestion: "",
-            chosenAnswer: "",
-            correctAnswer: ""
-          }),
-          headers: {
-            "Content-Type": "application/json"
-          }
-        });
-      }
-    }
-  </script>
+  <script src="script.js" defer></script>
 </body>
 </html>
