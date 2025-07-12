@@ -1,3 +1,6 @@
+const userName = sessionStorage.getItem("username");
+const selectedChapter = sessionStorage.getItem("selectedChapter");
+document.getElementById("chapter-name").textContent = selectedChapter;
 const csvUrl = "https://docs.google.com/spreadsheets/d/e/2PACX-1vSeMq5VrWndE6OZqE4aSrpj-MQhSYp5g7OlhZCY9cy1giwPhpyiIkQGCvzFA6-Ae-cGI6ICPkfy1o4F/pub?output=csv";
 
 const selectedChapter = sessionStorage.getItem("selectedChapter");
