@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
   <title>Chapter Quiz</title>
   <link rel="stylesheet" href="style.css" />
 </head>
@@ -22,11 +22,11 @@
   <div id="result-box" style="display: none;">
     <h2>✅ Quiz Complete</h2>
     <p id="score-result"></p>
-    <button onclick="window.location.href='index.html'">🏠 Back to Dashboard</button>
-    <button onclick="window.location.href='profile.html'">📊 View My Profile</button>
+    <button onclick="window.location.href='index.html'" type="button">🏠 Back to Dashboard</button>
+    <button onclick="window.location.href='profile.html'" type="button">📊 View Profile</button>
   </div>
 
-  <!-- Load CSV parser and custom script -->
+  <!-- Load CSV parser and main script -->
   <script src="https://cdn.jsdelivr.net/npm/papaparse@5.4.1/papaparse.min.js"></script>
   <script src="script.js" defer></script>
 </body>
