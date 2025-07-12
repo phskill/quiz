@@ -2,17 +2,23 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
   <title>Login</title>
   <link rel="stylesheet" href="style.css" />
 </head>
 <body>
-  <h1>🔐 Login</h1>
+  <h1>🔐 Login to Your Quiz Account</h1>
+
   <div id="login-container">
     <input type="text" id="login-user" placeholder="Username" />
     <input type="password" id="login-pass" placeholder="Password" />
-    <button id="login-btn" type="button">Login</button>
+
+    <div class="button-box">
+      <button id="login-btn" type="button">Login</button>
+      <button onclick="window.location.href='signup.html'" type="button">Create Account</button>
+    </div>
+
     <div id="login-status"></div>
-    <p>➡️ <a href="signup.html">Sign Up</a></p>
   </div>
 
   <script>
@@ -22,25 +28,36 @@
       return Array.from(new Uint8Array(hashBuffer)).map(b => b.toString(16).padStart(2, '0')).join('');
     }
 
-    const webAppUrl = "https://script.google.com/macros/s/AKfycbyayo8phYFtrOFXsP_ZD28OgqRbXUEw9kJAGwRcoIfKt6Tyaj5DNy17oSRzwCAV4elqBA/exec";
+    const webAppUrl = "https://script.google.com/macros/s/AKfycbwQBF2KwBonAe0SifJdJF1N2xLSn1vS1V3p84siclSaxaarF2-LZHNZzdqvrU4ynFWz/exec";
+
     document.getElementById("login-btn").onclick = async () => {
       const userId = document.getElementById("login-user").value.trim();
       const password = document.getElementById("login-pass").value;
-      if (!userId || !password) return document.getElementById("login-status").textContent = "⚠️ Fill both fields.";
 
-      const hashed = await hashPassword(password);
+      if (!userId || !password) {
+        document.getElementById("login-status").textContent = "⚠️ Please fill in both fields.";
+        return;
+      }
+
+      const hashedPassword = await hashPassword(password);
+
       fetch(webAppUrl, {
         method: "POST",
-        body: JSON.stringify({ mode: "login", userId, password: hashed }),
+        body: JSON.stringify({ mode: "login", userId, password: hashedPassword }),
         headers: { "Content-Type": "application/json" }
-      }).then(r => r.text()).then(response => {
+      })
+      .then(res => res.text())
+      .then(response => {
         if (response === "Login successful") {
           sessionStorage.setItem("userId", userId);
-          document.getElementById("login-status").textContent = "✅ Logged in!";
+          document.getElementById("login-status").textContent = "✅ Login successful! Redirecting...";
           setTimeout(() => window.location.href = "index.html", 1000);
         } else {
           document.getElementById("login-status").textContent = "❌ Invalid credentials.";
         }
+      })
+      .catch(() => {
+        document.getElementById("login-status").textContent = "🚫 Could not connect. Try again.";
       });
     };
   </script>
