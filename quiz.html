@@ -3,29 +3,25 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-  <title>Chapter Quiz</title>
+  <title>Quiz Time</title>
   <link rel="stylesheet" href="style.css" />
 </head>
 <body>
 
-  <h1>🧠 Chapter Quiz</h1>
-  <h2 id="chapter-name"></h2>
-  <h3 id="question-counter"></h3>
-  <h4 id="timer-box">⏳ Time Left: 15</h4>
+  <h1 id="chapter-name">📘 Loading Chapter...</h1>
 
   <div id="quiz-box">
-    <div id="question-text"></div>
+    <h2 id="question-counter"></h2>
+    <p id="question-text"></p>
     <ul id="options-list"></ul>
+    <div id="timer-box">⏳ Time Left: --</div>
     <button id="next-btn" type="button" disabled>Next</button>
   </div>
 
-  <div id="result-box" style="display: none;">
-    <h2>✅ Quiz Complete</h2>
-    <p id="score-result"></p>
-    <div class="button-box">
-      <button onclick="window.location.href='index.html'" type="button">🏠 Back to Dashboard</button>
-      <button onclick="window.location.href='profile.html'" type="button">📊 View Profile</button>
-    </div>
+  <div id="result-box" style="display:none;">
+    <h2 id="score-result"></h2>
+    <button onclick="window.location.href='index.html'" type="button">🏠 Back to Dashboard</button>
+    <button onclick="window.location.href='login.html'" type="button">🚪 Logout</button>
   </div>
 
   <script src="https://cdn.jsdelivr.net/npm/papaparse@5.4.1/papaparse.min.js"></script>
@@ -36,10 +32,9 @@
 
     document.getElementById("chapter-name").textContent = `📘 ${selectedChapter}`;
 
-    const proxyUrl = "https://api.cors.lol/?url=";
-    const webAppUrl = "https://script.google.com/macros/s/AKfycbwQBF2KwBonAe0SifJdJF1N2xLSn1vS1V3p84siclSaxaarF2-LZHNZzdqvrU4ynFWz/exec";
-    const fullPostUrl = proxyUrl + encodeURIComponent(webAppUrl);
-
+    const proxyUrl = "https://thingproxy.freeboard.io/fetch/";
+    const webAppUrl = "https://script.google.com/macros/s/AKfycbw6VHjxMjj60jvfBT2HpeXQAgQzAEuoNVp1ql0rTDXRafPqeT8G6DVjgvIWLcxf1PKIog/exec";
+    const fullUrl = proxyUrl + encodeURIComponent(webAppUrl);
     const csvUrl = "https://docs.google.com/spreadsheets/d/e/2PACX-1vSeMq5VrWndE6OZqE4aSrpj-MQhSYp5g7OlhZCY9cy1giwPhpyiIkQGCvzFA6-Ae-cGI6ICPkfy1o4F/pub?output=csv";
 
     let questionsArray = [];
@@ -123,24 +118,26 @@
       const totalScore = `${score} / ${questionsArray.length}`;
 
       const wrongAnswers = questionsArray.filter(q => !q.shuffledOptions[q.userChoice]?.isCorrect);
-      const data = wrongAnswers.length > 0 ? wrongAnswers : [{}];
+      const submissions = wrongAnswers.length === 0 ? [{
+        user: currentUser,
+        chapter: selectedChapter,
+        score: totalScore,
+        wrongQuestion: "",
+        chosenAnswer: "",
+        correctAnswer: ""
+      }] : wrongAnswers.map(q => ({
+        user: currentUser,
+        chapter: selectedChapter,
+        score: totalScore,
+        wrongQuestion: q["Question"],
+        chosenAnswer: q.shuffledOptions[q.userChoice]?.text || "",
+        correctAnswer: q.shuffledOptions.find(opt => opt.isCorrect)?.text || ""
+      }));
 
-      data.forEach(q => {
-        const chosenIndex = q.userChoice ?? -1;
-        const chosenText = q.shuffledOptions?.[chosenIndex]?.text || "";
-        const correctText = q.shuffledOptions?.find(opt => opt.isCorrect)?.text || "";
-
-        fetch(fullPostUrl, {
+      submissions.forEach(entry => {
+        fetch(fullUrl, {
           method: "POST",
-          body: JSON.stringify({
-            mode: "quizResult",
-            user: currentUser,
-            chapter: selectedChapter,
-            score: totalScore,
-            wrongQuestion: q["Question"] || "",
-            chosenAnswer: chosenText,
-            correctAnswer: correctText
-          }),
+          body: JSON.stringify({ mode: "quizResult", ...entry }),
           headers: { "Content-Type": "application/json" }
         });
       });
