@@ -8,16 +8,48 @@ Papa.parse(csvUrl, {
   header: true,
   complete: function(results) {
     const data = results.data;
-    const questions = data.map(row => ({
-      text: row["Question"],
-      options: [row["Option1"], row["Option2"], row["Option3"], row["Option4"]],
-      answer: parseInt(row["AnswerIndex"])
-    }));
-    startQuiz(questions);
+    const chapters = {};
+
+    data.forEach(row => {
+      const chapter = row["Chapter"];
+      if (!chapters[chapter]) chapters[chapter] = [];
+      chapters[chapter].push({
+        text: row["Question"],
+        options: [row["Option1"], row["Option2"], row["Option3"], row["Option4"]],
+        answer: parseInt(row["AnswerIndex"])
+      });
+    });
+
+    const select = document.getElementById("chapter-select");
+    Object.keys(chapters).forEach(ch => {
+      const opt = document.createElement("option");
+      opt.value = ch;
+      opt.textContent = ch;
+      select.appendChild(opt);
+    });
+
+    select.onchange = () => {
+      document.getElementById("start-btn").disabled = !select.value;
+    };
+
+    document.getElementById("start-btn").onclick = () => {
+      const selected = select.value;
+      if (selected && chapters[selected]) {
+        currentQuestion = 0;
+        score = 0;
+        document.getElementById("quiz").innerHTML = "";
+        document.getElementById("result").style.display = "none";
+        document.getElementById("chapter-select-container").style.display = "none";
+        document.getElementById("percent-display").style.display = "block";
+        startQuiz(chapters[selected]);
+      }
+    };
   }
 });
 
 function startQuiz(questionsArray) {
+  updateProgressInfo();
+
   showQuestion(questionsArray);
 
   function showQuestion(questions) {
@@ -26,12 +58,10 @@ function startQuiz(questionsArray) {
     const container = document.createElement('div');
     container.className = 'question-container';
 
-    // 🧠 Show question number and text
     const title = document.createElement('h3');
     title.textContent = `Question ${currentQuestion + 1}: ${q.text}`;
     container.appendChild(title);
 
-    // 🅰️ Label options as A, B, C, D
     const optionLabels = ['A', 'B', 'C', 'D'];
     q.options.forEach((opt, i) => {
       const btn = document.createElement('label');
@@ -66,23 +96,11 @@ function startQuiz(questionsArray) {
           container.remove();
           currentQuestion++;
 
-          // ✅ Update progress bar and percentage
           const percent = Math.round((currentQuestion / questionsArray.length) * 100);
           document.getElementById('progress-bar').style.width = `${percent}%`;
           document.getElementById('percent-display').textContent = `Completed: ${percent}%`;
 
-          if (currentQuestion < questionsArray.length) {
-            showQuestion(questionsArray);
-          } else {
-            // 🎯 Show final score only at end
-            document.getElementById('result').style.display = 'block';
-            document.getElementById('result').textContent = `Your score: ${score} / ${questionsArray.length}`;
-          }
-        }, 500);
-      }, 1000);
-    };
+          updateProgressInfo(currentQuestion, questionsArray.length);
 
-    container.appendChild(submitBtn);
-    document.getElementById('quiz').appendChild(container);
-  }
-}
+          if (currentQuestion < questionsArray.length) {
+            showQuestion(
