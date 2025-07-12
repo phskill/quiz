@@ -1,31 +1,52 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <title>Quiz App</title>
-  <link rel="stylesheet" href="style.css">
+  <meta charset="UTF-8" />
+  <title>Select Chapter</title>
+  <link rel="stylesheet" href="style.css" />
 </head>
 <body>
+  <h1>📚 Choose Your Quiz Chapter</h1>
 
-<h1>📝 Take the Quiz</h1>
+  <div id="chapter-select-container">
+    <select id="chapter-select">
+      <option value="">--Select Chapter--</option>
+    </select>
+    <button id="start-btn" disabled>Start Quiz</button>
+  </div>
 
-<div id="chapter-progress-info">Answered: 0 / 0 | Remaining: 0 | Completed: 0%</div>
+  <script src="https://cdn.jsdelivr.net/npm/papaparse@5.4.1/papaparse.min.js"></script>
+  <script>
+    const csvUrl = "https://docs.google.com/spreadsheets/d/e/2PACX-1vSeMq5VrWndE6OZqE4aSrpj-MQhSYp5g7OlhZCY9cy1giwPhpyiIkQGCvzFA6-Ae-cGI6ICPkfy1o4F/pub?output=csv";
 
-<div id="chapter-select-container">
-  <label for="chapter-select">Choose a Chapter:</label>
-  <select id="chapter-select">
-    <option value="">--Select--</option>
-  </select>
-  <button id="start-btn" disabled>Start Quiz</button>
-</div>
+    Papa.parse(csvUrl, {
+      download: true,
+      header: true,
+      complete: function(results) {
+        const chapters = new Set();
+        results.data.forEach(row => {
+          if (row["Chapter"]) chapters.add(row["Chapter"]);
+        });
 
-<div id="percent-display" style="display: none;">Completed: 0%</div>
-<div id="progress-container"><div id="progress-bar"></div></div>
+        const select = document.getElementById("chapter-select");
+        chapters.forEach(ch => {
+          const opt = document.createElement("option");
+          opt.value = ch;
+          opt.textContent = ch;
+          select.appendChild(opt);
+        });
 
-<div id="quiz"></div>
-<div class="result" id="result" style="display: none;"></div>
+        select.onchange = () => {
+          document.getElementById("start-btn").disabled = !select.value;
+        };
 
-<script src="https://cdn.jsdelivr.net/npm/papaparse@5.4.1/papaparse.min.js"></script>
-<script src="script.js"></script>
+        document.getElementById("start-btn").onclick = () => {
+          const selected = select.value;
+          sessionStorage.setItem("selectedChapter", selected);
+          window.location.href = "quiz.html";
+        };
+      }
+    });
+  </script>
 </body>
 </html>
