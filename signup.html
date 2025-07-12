@@ -2,18 +2,25 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
   <title>Sign Up</title>
   <link rel="stylesheet" href="style.css" />
 </head>
 <body>
-  <h1>📝 Sign Up</h1>
+
+  <h1>📝 Create Your Quiz Account</h1>
+
   <div id="signup-container">
-    <input type="text" id="signup-user" placeholder="Username" />
-    <input type="password" id="signup-pass" placeholder="Password" />
-    <input type="text" id="signup-name" placeholder="Full Name" />
-    <button id="signup-btn" type="button">Create Account</button>
+    <input type="text" id="signup-user" placeholder="Choose a Username" />
+    <input type="password" id="signup-pass" placeholder="Choose a Password" />
+    <input type="text" id="signup-name" placeholder="Your Full Name" />
+
+    <div class="button-box">
+      <button id="signup-btn" type="button">Sign Up</button>
+      <button onclick="window.location.href='login.html'" type="button">Back to Login</button>
+    </div>
+
     <div id="signup-status"></div>
-    <p>🔑 <a href="login.html">Already registered?</a></p>
   </div>
 
   <script>
@@ -23,33 +30,44 @@
       return Array.from(new Uint8Array(hashBuffer)).map(b => b.toString(16).padStart(2, '0')).join('');
     }
 
-    const webAppUrl = "https://script.google.com/macros/s/AKfycbyayo8phYFtrOFXsP_ZD28OgqRbXUEw9kJAGwRcoIfKt6Tyaj5DNy17oSRzwCAV4elqBA/exec";
+    const webAppUrl = "https://script.google.com/macros/s/AKfycbwQBF2KwBonAe0SifJdJF1N2xLSn1vS1V3p84siclSaxaarF2-LZHNZzdqvrU4ynFWz/exec";
+
     document.getElementById("signup-btn").onclick = async () => {
       const userId = document.getElementById("signup-user").value.trim();
       const password = document.getElementById("signup-pass").value;
       const fullName = document.getElementById("signup-name").value.trim();
-      if (!userId || !password || !fullName) return document.getElementById("signup-status").textContent = "⚠️ Fill all fields.";
 
-      const hashed = await hashPassword(password);
+      if (!userId || !password || !fullName) {
+        document.getElementById("signup-status").textContent = "⚠️ Please fill all fields.";
+        return;
+      }
+
+      const hashedPassword = await hashPassword(password);
+
       fetch(webAppUrl, {
         method: "POST",
         body: JSON.stringify({
           mode: "signup",
           userId,
-          password: hashed,
+          password: hashedPassword,
           name: fullName,
           createdOn: new Date().toLocaleString()
         }),
         headers: { "Content-Type": "application/json" }
-      }).then(r => r.text()).then(response => {
+      })
+      .then(res => res.text())
+      .then(response => {
         if (response === "Signup successful") {
-          document.getElementById("signup-status").textContent = "✅ Created! Redirecting...";
+          document.getElementById("signup-status").textContent = "✅ Account created! Redirecting...";
           setTimeout(() => window.location.href = "login.html", 1000);
         } else if (response === "User already exists") {
-          document.getElementById("signup-status").textContent = "❗ Username taken.";
+          document.getElementById("signup-status").textContent = "❗ Username already taken.";
         } else {
-          document.getElementById("signup-status").textContent = "❌ Error. Try again.";
+          document.getElementById("signup-status").textContent = "❌ Something went wrong. Try again.";
         }
+      })
+      .catch(() => {
+        document.getElementById("signup-status").textContent = "🚫 Could not connect. Try again later.";
       });
     };
   </script>
