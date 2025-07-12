@@ -3,71 +3,63 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Welcome to Quiz</title>
+  <title>Quiz Home</title>
   <link rel="stylesheet" href="style.css" />
 </head>
 <body>
 
-  <h1>👤 Welcome to Your Quiz Portal</h1>
+  <h1>🎓 Welcome to Your Quiz Portal</h1>
 
-  <div id="user-input-container">
-    <label for="username">Enter Your Name:</label>
-    <input type="text" id="username" placeholder="e.g. Parikshit" />
-    <button id="login-btn">Login</button>
-  </div>
+  <h2 id="welcome-msg"></h2>
 
-  <div id="chapter-select-container" style="display: none;">
-    <h2>📚 Choose Your Quiz Chapter</h2>
+  <div id="chapter-select-container">
+    <h3>📚 Choose Your Chapter</h3>
     <select id="chapter-select">
-      <option value="">--Choose--</option>
+      <option value="">-- Select Chapter --</option>
     </select>
     <button id="start-btn" disabled>Start Quiz</button>
   </div>
 
   <script src="https://cdn.jsdelivr.net/npm/papaparse@5.4.1/papaparse.min.js"></script>
   <script>
+    const currentUser = sessionStorage.getItem("userId");
+    if (!currentUser) {
+      window.location.href = "login.html"; // Redirect if not logged in
+    } else {
+      document.getElementById("welcome-msg").textContent = `👋 Hello, ${currentUser}! Ready to test your knowledge?`;
+    }
+
     const csvUrl = "https://docs.google.com/spreadsheets/d/e/2PACX-1vSeMq5VrWndE6OZqE4aSrpj-MQhSYp5g7OlhZCY9cy1giwPhpyiIkQGCvzFA6-Ae-cGI6ICPkfy1o4F/pub?output=csv";
 
-    document.getElementById("login-btn").onclick = () => {
-      const username = document.getElementById("username").value.trim();
-      if (!username) {
-        alert("Please enter your name to proceed.");
-        return;
+    Papa.parse(csvUrl, {
+      download: true,
+      header: true,
+      complete: function(results) {
+        const chapters = new Set();
+        results.data.forEach(row => {
+          if (row["Chapter"]) chapters.add(row["Chapter"]);
+        });
+
+        const select = document.getElementById("chapter-select");
+        chapters.forEach(ch => {
+          const opt = document.createElement("option");
+          opt.value = ch;
+          opt.textContent = ch;
+          select.appendChild(opt);
+        });
+
+        select.onchange = () => {
+          document.getElementById("start-btn").disabled = !select.value;
+        };
+
+        document.getElementById("start-btn").onclick = () => {
+          const chosen = select.value;
+          sessionStorage.setItem("selectedChapter", chosen);
+          sessionStorage.setItem("username", currentUser); // Optional redundancy
+          window.location.href = "quiz.html";
+        };
       }
-      sessionStorage.setItem("username", username);
-
-      document.getElementById("user-input-container").style.display = "none";
-      document.getElementById("chapter-select-container").style.display = "block";
-
-      Papa.parse(csvUrl, {
-        download: true,
-        header: true,
-        complete: function(results) {
-          const chapters = new Set();
-          results.data.forEach(row => {
-            if (row["Chapter"]) chapters.add(row["Chapter"]);
-          });
-
-          const select = document.getElementById("chapter-select");
-          chapters.forEach(ch => {
-            const opt = document.createElement("option");
-            opt.value = ch;
-            opt.textContent = ch;
-            select.appendChild(opt);
-          });
-
-          select.onchange = () => {
-            document.getElementById("start-btn").disabled = !select.value;
-          };
-
-          document.getElementById("start-btn").onclick = () => {
-            const chosen = select.value;
-            sessionStorage.setItem("selectedChapter", chosen);
-            window.location.href = "quiz.html";
-          };
-        }
-      });
-    };
+    });
   </script>
 </body>
 </html>
