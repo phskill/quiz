@@ -1,5 +1,10 @@
 const csvUrl = "https://docs.google.com/spreadsheets/d/e/2PACX-1vSeMq5VrWndE6OZqE4aSrpj-MQhSYp5g7OlhZCY9cy1giwPhpyiIkQGCvzFA6-Ae-cGI6ICPkfy1o4F/pub?output=csv";
 
+const selectedChapter = sessionStorage.getItem("selectedChapter");
+if (document.getElementById("chapter-name")) {
+  document.getElementById("chapter-name").textContent = selectedChapter;
+}
+
 let currentQuestion = 0;
 let score = 0;
 
@@ -8,47 +13,20 @@ Papa.parse(csvUrl, {
   header: true,
   complete: function(results) {
     const data = results.data;
-    const chapters = {};
-
-    data.forEach(row => {
-      const chapter = row["Chapter"];
-      if (!chapters[chapter]) chapters[chapter] = [];
-      chapters[chapter].push({
+    const chapterQuestions = data
+      .filter(row => row["Chapter"] === selectedChapter)
+      .map(row => ({
         text: row["Question"],
         options: [row["Option1"], row["Option2"], row["Option3"], row["Option4"]],
         answer: parseInt(row["AnswerIndex"])
-      });
-    });
+      }));
 
-    const select = document.getElementById("chapter-select");
-    Object.keys(chapters).forEach(ch => {
-      const opt = document.createElement("option");
-      opt.value = ch;
-      opt.textContent = ch;
-      select.appendChild(opt);
-    });
-
-    select.onchange = () => {
-      document.getElementById("start-btn").disabled = !select.value;
-    };
-
-    document.getElementById("start-btn").onclick = () => {
-      const selected = select.value;
-      if (selected && chapters[selected]) {
-        currentQuestion = 0;
-        score = 0;
-        document.getElementById("quiz").innerHTML = "";
-        document.getElementById("result").style.display = "none";
-        document.getElementById("chapter-select-container").style.display = "none";
-        document.getElementById("percent-display").style.display = "block";
-        startQuiz(chapters[selected]);
-      }
-    };
+    startQuiz(chapterQuestions);
   }
 });
 
 function startQuiz(questionsArray) {
-  updateProgressInfo();
+  updateProgressInfo(questionsArray);
 
   showQuestion(questionsArray);
 
@@ -100,7 +78,29 @@ function startQuiz(questionsArray) {
           document.getElementById('progress-bar').style.width = `${percent}%`;
           document.getElementById('percent-display').textContent = `Completed: ${percent}%`;
 
-          updateProgressInfo(currentQuestion, questionsArray.length);
+          updateProgressInfo(questionsArray);
 
           if (currentQuestion < questionsArray.length) {
-            showQuestion(
+            showQuestion(questionsArray);
+          } else {
+            document.getElementById('result').style.display = 'block';
+            document.getElementById('result').textContent = `Your score: ${score} / ${questionsArray.length}`;
+          }
+        }, 500);
+      }, 1000);
+    };
+
+    container.appendChild(submitBtn);
+    document.getElementById('quiz').appendChild(container);
+  }
+}
+
+function updateProgressInfo(questionsArray) {
+  const answered = currentQuestion;
+  const total = questionsArray.length;
+  const remaining = total - answered;
+  const percent = Math.round((answered / total) * 100);
+
+  document.getElementById('chapter-progress-info').textContent =
+    `Answered: ${answered} / ${total} | Remaining: ${remaining} | Completed: ${percent}%`;
+}
