@@ -3,91 +3,71 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-  <title>My Quiz Profile</title>
+  <title>My Profile</title>
   <link rel="stylesheet" href="style.css" />
 </head>
 <body>
 
-  <h1>📊 My Quiz Performance</h1>
-  <h2 id="user-id-label"></h2>
+  <h1>📊 Quiz History</h1>
+  <h2 id="profile-user"></h2>
 
   <div id="quiz-history">
-    <table>
+    <table id="history-table">
       <thead>
         <tr>
           <th>Chapter</th>
           <th>Score</th>
-          <th>Timestamp</th>
-          <th>Mistake</th>
+          <th>Question</th>
           <th>Your Answer</th>
           <th>Correct Answer</th>
         </tr>
       </thead>
-      <tbody id="results-table">
-        <!-- Quiz history rows will be added here -->
-      </tbody>
+      <tbody></tbody>
     </table>
   </div>
 
-  <button onclick="window.location.href='index.html'" type="button">🏠 Back to Dashboard</button>
+  <div class="button-box">
+    <button onclick="window.location.href='index.html'" type="button">🏠 Back to Dashboard</button>
+  </div>
 
-  <script src="https://cdn.jsdelivr.net/npm/papaparse@5.4.1/papaparse.min.js"></script>
   <script>
     const currentUser = sessionStorage.getItem("userId");
     if (!currentUser) window.location.href = "login.html";
-    else document.getElementById("user-id-label").textContent = `👤 User: ${currentUser}`;
+    else document.getElementById("profile-user").textContent = `👤 ${currentUser}`;
 
-    const csvUrl = "https://docs.google.com/spreadsheets/d/e/2PACX-1vSeMq5VrWndE6OZqE4aSrpj-MQhSYp5g7OlhZCY9cy1giwPhpyiIkQGCvzFA6-Ae-cGI6ICPkfy1o4F/pub?output=csv";
+    const proxyUrl = "https://api.cors.lol/?url=";
+    const webAppUrl = "https://script.google.com/macros/s/AKfycbwQBF2KwBonAe0SifJdJF1N2xLSn1vS1V3p84siclSaxaarF2-LZHNZzdqvrU4ynFWz/exec";
+    const fullPostUrl = proxyUrl + encodeURIComponent(webAppUrl);
 
-    Papa.parse(csvUrl, {
-      download: true,
-      header: true,
-      complete: function(results) {
-        const userResults = results.data.filter(r => r["User"] === currentUser);
-        const tableBody = document.getElementById("results-table");
-
-        userResults.forEach(entry => {
-          const tr = document.createElement("tr");
-
-          const chapterCell = document.createElement("td");
-          chapterCell.textContent = entry["Chapter"];
-
-          const scoreCell = document.createElement("td");
-          scoreCell.textContent = entry["Score"];
-
-          const timestampCell = document.createElement("td");
-          timestampCell.textContent = entry["Timestamp"];
-
-          const wrongCell = document.createElement("td");
-          wrongCell.textContent = entry["WrongQuestion"] || "-";
-
-          const chosenCell = document.createElement("td");
-          chosenCell.textContent = entry["ChosenAnswer"] || "-";
-
-          const correctCell = document.createElement("td");
-          correctCell.textContent = entry["CorrectAnswer"] || "-";
-
-          tr.appendChild(chapterCell);
-          tr.appendChild(scoreCell);
-          tr.appendChild(timestampCell);
-          tr.appendChild(wrongCell);
-          tr.appendChild(chosenCell);
-          tr.appendChild(correctCell);
-
-          tableBody.appendChild(tr);
-        });
-
-        if (userResults.length === 0) {
-          const tr = document.createElement("tr");
-          const td = document.createElement("td");
-          td.colSpan = 6;
-          td.textContent = "No quiz results found.";
-          td.style.textAlign = "center";
-          tr.appendChild(td);
-          tableBody.appendChild(tr);
-        }
+    fetch(fullPostUrl, {
+      method: "POST",
+      body: JSON.stringify({ mode: "quizHistory", user: currentUser }),
+      headers: { "Content-Type": "application/json" }
+    })
+    .then(res => res.json())
+    .then(data => {
+      const tbody = document.querySelector("#history-table tbody");
+      if (data.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="5">No quiz history found.</td></tr>`;
+        return;
       }
+      data.forEach(row => {
+        const tr = document.createElement("tr");
+        tr.innerHTML = `
+          <td>${row.chapter}</td>
+          <td>${row.score}</td>
+          <td>${row.wrongQuestion || "-"}</td>
+          <td>${row.chosenAnswer || "-"}</td>
+          <td>${row.correctAnswer || "-"}</td>
+        `;
+        tbody.appendChild(tr);
+      });
+    })
+    .catch(() => {
+      document.querySelector("#history-table tbody").innerHTML =
+        `<tr><td colspan="5">🚫 Could not load history. Try again later.</td></tr>`;
     });
   </script>
+
 </body>
 </html>
