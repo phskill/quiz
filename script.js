@@ -122,7 +122,7 @@ function showFinalResult(questionsArray) {
   const scoreRatio = score / questionsArray.length;
   let message = "";
 
-  const webAppUrl = "https://script.google.com/macros/s/AKfycbzE18ZtAIm4vL3MFecNfg6k8MZQranv8CHlZhcUg9JrALCuuKDKcydxvluIspFK3yZ-FA/exec";
+  const webAppUrl = "https://script.google.com/macros/s/AKfycbyayo8phYFtrOFXsP_ZD28OgqRbXUEw9kJAGwRcoIfKt6Tyaj5DNy17oSRzwCAV4elqBA/exec";
   const wrongAnswers = [];
 
   questionsArray.forEach(q => {
