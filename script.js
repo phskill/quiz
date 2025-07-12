@@ -102,7 +102,25 @@ function updateProgressInfo(questionsArray) {
 function showFinalResult(questionsArray) {
   const scoreRatio = score / questionsArray.length;
   let message = "";
+document.getElementById("share-btn").style.display = "inline-block";
 
+document.getElementById("share-btn").onclick = () => {
+  const shareText = `I just scored ${score} out of ${questionsArray.length} in the "${selectedChapter}" quiz! 🧠🎉`;
+  
+  if (navigator.share) {
+    navigator.share({
+      title: "My Quiz Result",
+      text: shareText,
+      url: window.location.href
+    }).then(() => {
+      console.log("Score shared successfully");
+    }).catch(err => {
+      console.log("Sharing failed:", err);
+    });
+  } else {
+    alert("Sharing isn't supported on your device. You can copy and share: \n\n" + shareText);
+  }
+};
   const badResults = [
     "Don't worry, every expert was once a beginner 💪",
     "Mistakes are proof you're trying 💡",
