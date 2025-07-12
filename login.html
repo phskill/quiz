@@ -24,11 +24,13 @@
   <script>
     async function hashPassword(password) {
       const msgBuffer = new TextEncoder().encode(password);
-      const hashBuffer = await crypto.subtle.digest('SHA-256', msgBuffer);
-      return Array.from(new Uint8Array(hashBuffer)).map(b => b.toString(16).padStart(2, '0')).join('');
+      const hashBuffer = await crypto.subtle.digest("SHA-256", msgBuffer);
+      return Array.from(new Uint8Array(hashBuffer)).map(b => b.toString(16).padStart(2, "0")).join("");
     }
 
+    const proxyUrl = "https://api.cors.lol/?url=";
     const webAppUrl = "https://script.google.com/macros/s/AKfycbwQBF2KwBonAe0SifJdJF1N2xLSn1vS1V3p84siclSaxaarF2-LZHNZzdqvrU4ynFWz/exec";
+    const fullUrl = proxyUrl + encodeURIComponent(webAppUrl);
 
     document.getElementById("login-btn").onclick = async () => {
       const userId = document.getElementById("login-user").value.trim();
@@ -41,7 +43,7 @@
 
       const hashedPassword = await hashPassword(password);
 
-      fetch(webAppUrl, {
+      fetch(fullUrl, {
         method: "POST",
         body: JSON.stringify({ mode: "login", userId, password: hashedPassword }),
         headers: { "Content-Type": "application/json" }
