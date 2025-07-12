@@ -7,15 +7,16 @@
   <link rel="stylesheet" href="style.css" />
 </head>
 <body>
-  <h1>🔐 Login to Your Quiz Account</h1>
+
+  <h1>🔑 Login to Your Quiz Account</h1>
 
   <div id="login-container">
-    <input type="text" id="login-user" placeholder="Username" />
-    <input type="password" id="login-pass" placeholder="Password" />
+    <input type="text" id="login-user" placeholder="Enter Username" />
+    <input type="password" id="login-pass" placeholder="Enter Password" />
 
     <div class="button-box">
       <button id="login-btn" type="button">Login</button>
-      <button onclick="window.location.href='signup.html'" type="button">Create Account</button>
+      <button onclick="window.location.href='signup.html'" type="button">📝 Create Account</button>
     </div>
 
     <div id="login-status"></div>
@@ -25,11 +26,12 @@
     async function hashPassword(password) {
       const msgBuffer = new TextEncoder().encode(password);
       const hashBuffer = await crypto.subtle.digest("SHA-256", msgBuffer);
-      return Array.from(new Uint8Array(hashBuffer)).map(b => b.toString(16).padStart(2, "0")).join("");
+      return Array.from(new Uint8Array(hashBuffer))
+        .map(b => b.toString(16).padStart(2, "0")).join("");
     }
 
-    const proxyUrl = "https://api.cors.lol/?url=";
-    const webAppUrl = "https://script.google.com/macros/s/AKfycbwQBF2KwBonAe0SifJdJF1N2xLSn1vS1V3p84siclSaxaarF2-LZHNZzdqvrU4ynFWz/exec";
+    const proxyUrl = "https://thingproxy.freeboard.io/fetch/";
+    const webAppUrl = "https://script.google.com/macros/s/AKfycbw6VHjxMjj60jvfBT2HpeXQAgQzAEuoNVp1ql0rTDXRafPqeT8G6DVjgvIWLcxf1PKIog/exec";
     const fullUrl = proxyUrl + encodeURIComponent(webAppUrl);
 
     document.getElementById("login-btn").onclick = async () => {
@@ -37,7 +39,7 @@
       const password = document.getElementById("login-pass").value;
 
       if (!userId || !password) {
-        document.getElementById("login-status").textContent = "⚠️ Please fill in both fields.";
+        document.getElementById("login-status").textContent = "⚠️ Please enter both username and password.";
         return;
       }
 
@@ -50,18 +52,21 @@
       })
       .then(res => res.text())
       .then(response => {
+        console.log("🔐 Login Response:", response);
         if (response === "Login successful") {
           sessionStorage.setItem("userId", userId);
-          document.getElementById("login-status").textContent = "✅ Login successful! Redirecting...";
+          document.getElementById("login-status").textContent = "✅ Logged in! Redirecting...";
           setTimeout(() => window.location.href = "index.html", 1000);
         } else {
-          document.getElementById("login-status").textContent = "❌ Invalid credentials.";
+          document.getElementById("login-status").textContent = "❌ " + response;
         }
       })
-      .catch(() => {
-        document.getElementById("login-status").textContent = "🚫 Could not connect. Try again.";
+      .catch(err => {
+        console.error("🚫 Fetch error:", err);
+        document.getElementById("login-status").textContent = "🚫 Could not connect. Try again later.";
       });
     };
   </script>
+
 </body>
 </html>
