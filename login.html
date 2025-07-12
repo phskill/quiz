@@ -1,19 +1,21 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <title>Login to Your Quiz Profile</title>
-  <link rel="stylesheet" href="style.css">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Login to Your Quiz Account</title>
+  <link rel="stylesheet" href="style.css" />
 </head>
 <body>
 
-  <h1>🔐 Login to Your Account</h1>
+  <h1>🔐 Login to Your Quiz Account</h1>
 
   <div id="login-container">
-    <input type="text" id="login-user" placeholder="User ID" />
-    <input type="password" id="login-pass" placeholder="Password" />
+    <input type="text" id="login-user" placeholder="Enter Your Username" />
+    <input type="password" id="login-pass" placeholder="Enter Password" />
     <button id="login-btn">Login</button>
     <div id="login-status"></div>
+    <p>➡️ New here? <a href="signup.html">Create an account</a></p>
   </div>
 
   <script>
@@ -31,18 +33,18 @@
       const password = document.getElementById("login-pass").value;
 
       if (!userId || !password) {
-        document.getElementById("login-status").textContent = "⚠️ Please enter both fields.";
+        document.getElementById("login-status").textContent = "⚠️ Please fill in both fields.";
         return;
       }
 
-      const hashedPass = await hashPassword(password);
+      const hashedPassword = await hashPassword(password);
 
       fetch(webAppUrl, {
         method: "POST",
         body: JSON.stringify({
           mode: "login",
-          userId: userId,
-          password: hashedPass
+          userId,
+          password: hashedPassword
         }),
         headers: {
           "Content-Type": "application/json"
@@ -52,12 +54,12 @@
       .then(response => {
         if (response === "Login successful") {
           sessionStorage.setItem("userId", userId);
-          document.getElementById("login-status").textContent = "✅ Logged in!";
+          document.getElementById("login-status").textContent = "✅ Login successful! Redirecting...";
           setTimeout(() => {
             window.location.href = "index.html";
           }, 1000);
         } else {
-          document.getElementById("login-status").textContent = "❌ Invalid credentials.";
+          document.getElementById("login-status").textContent = "❌ Invalid username or password.";
         }
       });
     };
