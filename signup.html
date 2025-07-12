@@ -27,12 +27,13 @@
     async function hashPassword(password) {
       const msgBuffer = new TextEncoder().encode(password);
       const hashBuffer = await crypto.subtle.digest("SHA-256", msgBuffer);
-      return Array.from(new Uint8Array(hashBuffer)).map(b => b.toString(16).padStart(2, "0")).join("");
+      return Array.from(new Uint8Array(hashBuffer))
+        .map(b => b.toString(16).padStart(2, "0")).join("");
     }
 
-    const proxyUrl = "https://api.cors.lol/?url=";
+    const proxyUrl = "https://corsproxy.io/";
     const webAppUrl = "https://script.google.com/macros/s/AKfycbwQBF2KwBonAe0SifJdJF1N2xLSn1vS1V3p84siclSaxaarF2-LZHNZzdqvrU4ynFWz/exec";
-    const fullUrl = proxyUrl + encodeURIComponent(webAppUrl);
+    const fullUrl = proxyUrl + webAppUrl;
 
     document.getElementById("signup-btn").onclick = async () => {
       const userId = document.getElementById("signup-user").value.trim();
@@ -59,6 +60,7 @@
       })
       .then(res => res.text())
       .then(response => {
+        console.log("📦 Raw signup response:", response);
         if (response === "Signup successful") {
           document.getElementById("signup-status").textContent = "✅ Account created! Redirecting...";
           setTimeout(() => window.location.href = "login.html", 1000);
@@ -68,10 +70,12 @@
           document.getElementById("signup-status").textContent = "❌ Something went wrong. Try again.";
         }
       })
-      .catch(() => {
+      .catch(err => {
+        console.error("🚫 Fetch error:", err);
         document.getElementById("signup-status").textContent = "🚫 Could not connect. Try again later.";
       });
     };
   </script>
+
 </body>
 </html>
