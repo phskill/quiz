@@ -1,22 +1,21 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>My Quiz Profile</title>
-  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="style.css" />
 </head>
 <body>
+
   <h1>📊 My Quiz Profile</h1>
   <h2 id="user-greeting"></h2>
 
-
   <button id="logout-btn">🚪 Logout</button>
+  <button onclick="window.location.href='index.html'">🏠 Back to Dashboard</button>
 
   <div id="quiz-history">
-    <h3>📝 Past Quiz Attempts</h3>
-    <h3>🔁 Retry Mistakes</h3>
-<ul id="retry-list"></ul>
-
+    <h3>📝 Past Attempts</h3>
     <table border="1">
       <thead>
         <tr>
@@ -38,7 +37,7 @@
     if (!currentUser) {
       window.location.href = "login.html";
     } else {
-      document.getElementById("user-greeting").textContent = `👋 Welcome, ${currentUser}`;
+      document.getElementById("user-greeting").textContent = `👋 Hello, ${currentUser}`;
     }
 
     document.getElementById("logout-btn").onclick = () => {
