@@ -1,77 +1,77 @@
-const questions = [
-  {
-    text: "What is the capital of France?",
-    options: ["Berlin", "Madrid", "Paris", "Lisbon"],
-    answer: 2
-  },
-  {
-    text: "Which planet is known as the Red Planet?",
-    options: ["Earth", "Mars", "Jupiter", "Venus"],
-    answer: 1
-  },
-  {
-    text: "Who wrote 'Hamlet'?",
-    options: ["Charles Dickens", "Leo Tolstoy", "William Shakespeare", "Mark Twain"],
-    answer: 2
-  }
-];
+const API_KEY = "AIzaSyCp7TU65xjCe-es224kMg2CLkI1p9lOv1M";
+const SPREADSHEET_ID = "1ORYvcif7ABs-TyhfL_Eju9kMcYpbBbaOo51TP53zvwg";
+const RANGE = "quiz-data!A2:F"; // Skip header row
+
+async function fetchQuizData() {
+  const url = `https://sheets.googleapis.com/v4/spreadsheets/${SPREADSHEET_ID}/values/${RANGE}?key=${API_KEY}`;
+  const response = await fetch(url);
+  const data = await response.json();
+
+  return data.values.map(row => ({
+    text: row[0],
+    options: row.slice(1, 5),
+    answer: parseInt(row[5])
+  }));
+}
 
 let currentQuestion = 0;
 let score = 0;
 
-function showQuestion() {
-  const container = document.createElement('div');
-  container.className = 'question-container';
+fetchQuizData().then(questions => {
+  showQuestion(questions);
 
-  const q = questions[currentQuestion];
-  const title = document.createElement('h3');
-  title.textContent = q.text;
-  container.appendChild(title);
+  function showQuestion(questionsArray) {
+    const q = questionsArray[currentQuestion];
+    const container = document.createElement('div');
+    container.className = 'question-container';
 
-  q.options.forEach((opt, i) => {
-    const btn = document.createElement('label');
-    btn.className = 'answer';
-    btn.innerHTML = `<input type="radio" name="answer" value="${i}"> ${opt}`;
-    container.appendChild(btn);
-  });
+    const title = document.createElement('h3');
+    title.textContent = q.text;
+    container.appendChild(title);
 
-  const submitBtn = document.createElement('button');
-  submitBtn.textContent = "Submit";
-  submitBtn.onclick = () => {
-    const selected = container.querySelector('input[name="answer"]:checked');
-    if (!selected) return;
-
-    const selectedIndex = parseInt(selected.value);
-    const allOptions = container.querySelectorAll('.answer');
-
-    allOptions.forEach((opt, i) => {
-      if (i === q.answer) {
-        opt.classList.add('correct');
-      } else if (i === selectedIndex) {
-        opt.classList.add('incorrect');
-      }
+    q.options.forEach((opt, i) => {
+      const btn = document.createElement('label');
+      btn.className = 'answer';
+      btn.innerHTML = `<input type="radio" name="answer" value="${i}"> ${opt}`;
+      container.appendChild(btn);
     });
 
-    if (selectedIndex === q.answer) score++;
+    const submitBtn = document.createElement('button');
+    submitBtn.textContent = "Submit";
+    submitBtn.onclick = () => {
+      const selected = container.querySelector('input[name="answer"]:checked');
+      if (!selected) return;
 
-    submitBtn.disabled = true;
+      const selectedIndex = parseInt(selected.value);
+      const allOptions = container.querySelectorAll('.answer');
 
-    setTimeout(() => {
-      container.classList.add('hidden');
-      setTimeout(() => {
-        container.remove();
-        currentQuestion++;
-        if (currentQuestion < questions.length) {
-          showQuestion();
-        } else {
-          document.getElementById('result').textContent = `Your score: ${score} / ${questions.length}`;
+      allOptions.forEach((opt, i) => {
+        if (i === q.answer) {
+          opt.classList.add('correct');
+        } else if (i === selectedIndex) {
+          opt.classList.add('incorrect');
         }
-      }, 500);
-    }, 1000);
-  };
+      });
 
-  container.appendChild(submitBtn);
-  document.getElementById('quiz').appendChild(container);
-}
+      if (selectedIndex === q.answer) score++;
+      submitBtn.disabled = true;
 
-showQuestion();
+      setTimeout(() => {
+        container.classList.add('hidden');
+        setTimeout(() => {
+          container.remove();
+          currentQuestion++;
+          if (currentQuestion < questionsArray.length) {
+            showQuestion(questionsArray);
+          } else {
+            document.getElementById('result').textContent =
+              `Your score: ${score} / ${questionsArray.length}`;
+          }
+        }, 500);
+      }, 1000);
+    };
+
+    container.appendChild(submitBtn);
+    document.getElementById('quiz').appendChild(container);
+  }
+});
