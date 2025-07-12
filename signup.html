@@ -17,7 +17,7 @@
 
     <div class="button-box">
       <button id="signup-btn" type="button">Sign Up</button>
-      <button onclick="window.location.href='login.html'" type="button">Back to Login</button>
+      <button onclick="window.location.href='login.html'" type="button">🔐 Back to Login</button>
     </div>
 
     <div id="signup-status"></div>
@@ -32,7 +32,7 @@
     }
 
     const proxyUrl = "https://thingproxy.freeboard.io/fetch/";
-    const webAppUrl = "https://script.google.com/macros/s/AKfycbwQBF2KwBonAe0SifJdJF1N2xLSn1vS1V3p84siclSaxaarF2-LZHNZzdqvrU4ynFWz/exec";
+    const webAppUrl = "https://script.google.com/macros/s/AKfycbw6VHjxMjj60jvfBT2HpeXQAgQzAEuoNVp1ql0rTDXRafPqeT8G6DVjgvIWLcxf1PKIog/exec";
     const fullUrl = proxyUrl + encodeURIComponent(webAppUrl);
 
     document.getElementById("signup-btn").onclick = async () => {
@@ -60,7 +60,7 @@
       })
       .then(res => res.text())
       .then(response => {
-        console.log("📦 Raw signup response:", response);
+        console.log("📦 Signup response:", response);
         if (response === "Signup successful") {
           document.getElementById("signup-status").textContent = "✅ Account created! Redirecting...";
           setTimeout(() => window.location.href = "login.html", 1000);
@@ -71,7 +71,7 @@
         }
       })
       .catch(err => {
-        console.error("🚫 Fetch error:", err);
+        console.error("🚫 Signup error:", err);
         document.getElementById("signup-status").textContent = "🚫 Could not connect. Try again later.";
       });
     };
