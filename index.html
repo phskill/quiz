@@ -26,7 +26,9 @@
     </div>
   </div>
 
+  <script src="script.js"></script>
   <script>
+    // Session check and chapter selection now modular
     const currentUser = sessionStorage.getItem("userId");
     if (!currentUser) window.location.href = "login.html";
     else document.getElementById("user-label").textContent = `👋 Hello, ${currentUser}`;
