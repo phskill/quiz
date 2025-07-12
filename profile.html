@@ -8,18 +8,19 @@
 </head>
 <body>
 
-  <h1>📊 Quiz History</h1>
-  <h2 id="profile-user"></h2>
+  <h1>📊 My Quiz History</h1>
+  <h2 id="user-header"></h2>
 
-  <div id="quiz-history">
+  <div id="history-box">
     <table id="history-table">
       <thead>
         <tr>
           <th>Chapter</th>
           <th>Score</th>
+          <th>Time</th>
           <th>Question</th>
-          <th>Your Answer</th>
-          <th>Correct Answer</th>
+          <th>Chosen</th>
+          <th>Correct</th>
         </tr>
       </thead>
       <tbody></tbody>
@@ -28,44 +29,54 @@
 
   <div class="button-box">
     <button onclick="window.location.href='index.html'" type="button">🏠 Back to Dashboard</button>
+    <button onclick="window.location.href='login.html'" type="button">🚪 Logout</button>
   </div>
 
   <script>
+    const proxyUrl = "https://thingproxy.freeboard.io/fetch/";
+    const webAppUrl = "https://script.google.com/macros/s/AKfycbw6VHjxMjj60jvfBT2HpeXQAgQzAEuoNVp1ql0rTDXRafPqeT8G6DVjgvIWLcxf1PKIog/exec";
+    const fullUrl = proxyUrl + encodeURIComponent(webAppUrl);
+
     const currentUser = sessionStorage.getItem("userId");
-    if (!currentUser) window.location.href = "login.html";
-    else document.getElementById("profile-user").textContent = `👤 ${currentUser}`;
+    if (!currentUser) {
+      window.location.href = "login.html";
+    } else {
+      document.getElementById("user-header").textContent = `👤 User: ${currentUser}`;
+    }
 
-    const proxyUrl = "https://api.cors.lol/?url=";
-    const webAppUrl = "https://script.google.com/macros/s/AKfycbwQBF2KwBonAe0SifJdJF1N2xLSn1vS1V3p84siclSaxaarF2-LZHNZzdqvrU4ynFWz/exec";
-    const fullPostUrl = proxyUrl + encodeURIComponent(webAppUrl);
-
-    fetch(fullPostUrl, {
+    fetch(fullUrl, {
       method: "POST",
       body: JSON.stringify({ mode: "quizHistory", user: currentUser }),
       headers: { "Content-Type": "application/json" }
     })
     .then(res => res.json())
     .then(data => {
-      const tbody = document.querySelector("#history-table tbody");
+      const tableBody = document.querySelector("#history-table tbody");
+      tableBody.innerHTML = "";
+
       if (data.length === 0) {
-        tbody.innerHTML = `<tr><td colspan="5">No quiz history found.</td></tr>`;
+        tableBody.innerHTML = `<tr><td colspan="6">🤷 No quiz history found.</td></tr>`;
         return;
       }
-      data.forEach(row => {
-        const tr = document.createElement("tr");
-        tr.innerHTML = `
-          <td>${row.chapter}</td>
-          <td>${row.score}</td>
-          <td>${row.wrongQuestion || "-"}</td>
-          <td>${row.chosenAnswer || "-"}</td>
-          <td>${row.correctAnswer || "-"}</td>
+
+      data.forEach(entry => {
+        const row = document.createElement("tr");
+
+        row.innerHTML = `
+          <td>${entry.Chapter}</td>
+          <td>${entry.Score}</td>
+          <td>${entry.Timestamp}</td>
+          <td>${entry.WrongQuestion || "-"}</td>
+          <td>${entry.ChosenAnswer || "-"}</td>
+          <td>${entry.CorrectAnswer || "-"}</td>
         `;
-        tbody.appendChild(tr);
+
+        tableBody.appendChild(row);
       });
     })
-    .catch(() => {
-      document.querySelector("#history-table tbody").innerHTML =
-        `<tr><td colspan="5">🚫 Could not load history. Try again later.</td></tr>`;
+    .catch(err => {
+      console.error("🚫 History fetch error:", err);
+      document.querySelector("#history-table tbody").innerHTML = `<tr><td colspan="6">⚠️ Could not fetch history.</td></tr>`;
     });
   </script>
 
