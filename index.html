@@ -8,10 +8,22 @@
 <body>
 
 <h1>📝 Take the Quiz</h1>
-<div id="quiz"></div>
-<div id="percent-display">Completed: 0%</div>
+
+<div id="chapter-progress-info">Answered: 0 / 0 | Remaining: 0 | Completed: 0%</div>
+
+<div id="chapter-select-container">
+  <label for="chapter-select">Choose a Chapter:</label>
+  <select id="chapter-select">
+    <option value="">--Select--</option>
+  </select>
+  <button id="start-btn" disabled>Start Quiz</button>
+</div>
+
+<div id="percent-display" style="display: none;">Completed: 0%</div>
 <div id="progress-container"><div id="progress-bar"></div></div>
-<div class="result" id="result"></div>
+
+<div id="quiz"></div>
+<div class="result" id="result" style="display: none;"></div>
 
 <script src="https://cdn.jsdelivr.net/npm/papaparse@5.4.1/papaparse.min.js"></script>
 <script src="script.js"></script>
