@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>My Quiz Profile</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <h1>📊 My Quiz Profile</h1>
+  <h2 id="user-greeting"></h2>
+  <button id="logout-btn">🚪 Logout</button>
+
+  <div id="quiz-history">
+    <h3>📝 Past Quiz Attempts</h3>
+    <table border="1">
+      <thead>
+        <tr>
+          <th>Chapter</th>
+          <th>Score</th>
+          <th>Timestamp</th>
+          <th>Mistake</th>
+          <th>Your Answer</th>
+          <th>Correct Answer</th>
+        </tr>
+      </thead>
+      <tbody id="history-table"></tbody>
+    </table>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/papaparse@5.4.1/papaparse.min.js"></script>
+  <script>
+    const currentUser = sessionStorage.getItem("userId");
+    if (!currentUser) {
+      window.location.href = "login.html";
+    } else {
+      document.getElementById("user-greeting").textContent = `👋 Welcome, ${currentUser}`;
+    }
+
+    document.getElementById("logout-btn").onclick = () => {
+      sessionStorage.clear();
+      window.location.href = "login.html";
+    };
+
+    const sheetUrl = "https://docs.google.com/spreadsheets/d/e/2PACX-1vSeMq5VrWndE6OZqE4aSrpj-MQhSYp5g7OlhZCY9cy1giwPhpyiIkQGCvzFA6-Ae-cGI6ICPkfy1o4F/pub?output=csv";
+
+    Papa.parse(sheetUrl, {
+      download: true,
+      header: true,
+      complete: function(results) {
+        const table = document.getElementById("history-table");
+        results.data.forEach(row => {
+          if (row["User"] === currentUser) {
+            const tr = document.createElement("tr");
+            tr.innerHTML = `
+              <td>${row["Chapter"]}</td>
+              <td>${row["Score"]}</td>
+              <td>${row["Timestamp"]}</td>
+              <td>${row["WrongQuestion"] || "-"}</td>
+              <td>${row["ChosenAnswer"] || "-"}</td>
+              <td>${row["CorrectAnswer"] || "-"}</td>
+            `;
+            table.appendChild(tr);
+          }
+        });
+      }
+    });
+  </script>
+</body>
+</html>
