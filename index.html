@@ -2,15 +2,17 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <title>Select Chapter</title>
+  <title>Chapter Quiz Selector</title>
   <link rel="stylesheet" href="style.css" />
 </head>
 <body>
+
   <h1>📚 Choose Your Quiz Chapter</h1>
 
   <div id="chapter-select-container">
+    <label for="chapter-select">Select a Chapter:</label>
     <select id="chapter-select">
-      <option value="">--Select Chapter--</option>
+      <option value="">--Choose--</option>
     </select>
     <button id="start-btn" disabled>Start Quiz</button>
   </div>
@@ -41,8 +43,8 @@
         };
 
         document.getElementById("start-btn").onclick = () => {
-          const selected = select.value;
-          sessionStorage.setItem("selectedChapter", selected);
+          const chosen = select.value;
+          sessionStorage.setItem("selectedChapter", chosen);
           window.location.href = "quiz.html";
         };
       }
