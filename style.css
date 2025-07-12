@@ -152,7 +152,20 @@ button {
 button:hover {
   background-color: #2980b9;
 }
+#back-btn, #restart-btn {
+  margin: 10px;
+  padding: 10px 18px;
+  font-size: 16px;
+  background-color: #27ae60;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+}
 
+#back-btn:hover, #restart-btn:hover {
+  background-color: #219150;
+}
 /* === Result Section === */
 .result {
   margin-top: 40px;
